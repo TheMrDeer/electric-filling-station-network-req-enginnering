@@ -52,4 +52,8 @@ public class ManageChargingStation {
     @Then("I should receive only station {string}")
     public void iShouldReceiveOnlyStation(String arg0) {
     }
+
+    @When("I remove the charging station {string} from {string}")
+    public void iRemoveTheChargingStationFrom(String arg0, String arg1) {
+    }
 }

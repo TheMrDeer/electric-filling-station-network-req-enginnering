@@ -8,6 +8,11 @@ Feature: Manage Charging Stations
     When I add a charging station with ID "CS-001" to "Vienna Central"
     Then the station "CS-001" should be associated with "Vienna Central"
 
+  Scenario: Delete charging stations of location (Story #40)
+    Given a station "CS-001" exists at "Vienna Central"
+    When I remove the charging station "CS-001" from "Vienna Central"
+    Then the station "CS-001" should no longer exist at "Vienna Central"
+
   Scenario: Set charging station type (Story #10)
     Given a station "CS-001" exists at "Vienna Central"
     When I set the charging type of "CS-001" to "DC"

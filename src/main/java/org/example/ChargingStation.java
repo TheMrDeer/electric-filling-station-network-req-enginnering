@@ -6,10 +6,15 @@ public class ChargingStation {
     StationState state;
     String locationId;
 
-    public ChargingStation(String stationID, StationState state, String locationId) {
+    ChargingStationType type;
+
+
+
+    public ChargingStation(String stationID, StationState state, String locationId, ChargingStationType type) {
         this.stationID = stationID;
         this.state = state;
         this.locationId = locationId;
+        this.type = type;
     }
 
     public void print() {

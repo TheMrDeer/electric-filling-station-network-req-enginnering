@@ -2,12 +2,10 @@ package org.example;
 
 public class ChargingStation {
 
-    String stationID;
-    StationState state;
-    String locationId;
-
+    private String stationID;
+    private StationState state;
+    private String locationId;
     ChargingStationType type;
-
 
 
     public ChargingStation(String stationID, StationState state, String locationId, ChargingStationType type) {

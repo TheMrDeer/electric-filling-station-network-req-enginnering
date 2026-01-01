@@ -6,32 +6,33 @@ import java.util.List;
 public class Location {
 
 
-    String locationId;
-    String name;
-    String address;
-    List<ChargingStation> chargingStations = new ArrayList<>();
-    //String status;
+    private String locationId;
+    private String name;
+    private String address;
+    private Status status; //enum? besser in Ch.Station?
+    List<ChargingStation> chargingStations = new ArrayList<>(); // fehlt im UML
 
-    public Location(String locationId, String name, String address) {
+    public Location(String locationId, String name, String address, Status status) {
         this.locationId = locationId;
         this.name = name;
         this.address = address;
+        this.status = status;
     }
 
 
     public void addLocation() {
-        LocationRepository.addLocation(this);
+        StationManager.addLocation(this);
     }
 
-    public void removeLocation() {
-        LocationRepository.removeLocation(this);
+    public void deleteLocation() {
+        StationManager.removeLocation(this);
     }
 
     public void addChargingStationToLocation(ChargingStation chargingStation) {
         chargingStations.add(chargingStation);
     }
 
-    public void print() {
-        System.out.printf("LocationID: %s, Name: %s, Address: %s", this.locationId, this.name, this.address);
+    public String getLocationInfo() {
+        return String.format("LocationID: %s, Name: %s, Address: %s", this.locationId, this.name, this.address);
     }
 }

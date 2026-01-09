@@ -5,6 +5,10 @@ import java.util.List;
 
 public class StationManager {
 
+    public static List<ChargingStation> getChargingStations() {
+        return chargingStations;
+    }
+
     private static List<ChargingStation> chargingStations = new ArrayList<>();
     private static List<Location> locations = new ArrayList<>();
 

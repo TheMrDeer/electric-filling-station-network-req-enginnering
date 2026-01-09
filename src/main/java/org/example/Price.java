@@ -6,14 +6,17 @@ public class Price {
 
     private String priceId;
     private double ratePerMinute;
-    private ChargingStation chargingStation;
     private Date validFrom;
     private Date validTo;
 
-    public Price(String priceId, double ratePerMinute, ChargingStation chargingStation, Date validFrom, Date validTo) {
+
+    public Price(double ratePerMinute) {
+        setPrice(ratePerMinute);
+    }
+
+    public Price(String priceId, double ratePerMinute, Date validFrom, Date validTo) {
         this.priceId = priceId;
         setPrice(ratePerMinute);
-        this.chargingStation = chargingStation;
         this.validFrom = validFrom;
         this.validTo = validTo;
     }

@@ -32,4 +32,7 @@ public class Customer extends User {
         return this.checkBalance();
     }
 
+    public String getCustomerInfo(){
+        return getUserId() +" "+ this.accountBalance;
+    }
 }

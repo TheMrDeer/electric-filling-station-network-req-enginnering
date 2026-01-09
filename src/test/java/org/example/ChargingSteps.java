@@ -1,19 +1,21 @@
 package org.example;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Charging {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class ChargingSteps {
     @Given("the E.Power system is initialized")
-    public void the_e_power_system_is_initialized() {
-
+    public void theEPowerSystemIsInitialized() {
     }
 
     @And("a location {string} exists with the following stations:")
@@ -30,18 +32,36 @@ public class Charging {
                     row.get("StationID"),
                     StationState.fromLabel(row.get("State")),
                     location.getLocationId(),
-                    ChargingStationType.valueOf(row.get("Type"))
+                    ChargingStationType.valueOf(row.get("Type")),
+                    new Price(Double.parseDouble(row.get("PricePerMin")))
             );
+            station.addChargingStation();
         }
-
     }
+
+    @And("a customer {string} exists with a balance of {double}")
+    public void aCustomerExistsWithABalanceOf(String arg0, double arg1) {
+        Customer c1 = new Customer("C1", arg0, "", "");
+        c1.register();
+        c1.rechargeAccount(arg1);
+    }
+
+    private List<ChargingStation> chargingStations;
+    private Map<String, ChargingStation> stationsById = new HashMap<>();
 
     @When("I search for available charging stations")
     public void iSearchForAvailableChargingStations() {
+        chargingStations = StationManager.getChargingStations();
+        stationsById.clear();
+        for (ChargingStation cs : chargingStations) {
+            stationsById.put(cs.getStationID(), cs);
+        }
     }
 
     @Then("I should see {string} with type {string} and state {string}")
     public void iShouldSeeWithTypeAndState(String arg0, String arg1, String arg2) {
+        assertEquals()
+
     }
 
     @And("I should see {string} with type {string} and price {double}")

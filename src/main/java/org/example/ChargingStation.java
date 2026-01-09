@@ -8,6 +8,8 @@ public class ChargingStation {
     ChargingStationType type;
 
 
+
+
     public ChargingStation(String stationID, StationState state, String locationId, ChargingStationType type) {
         this.stationID = stationID;
         this.state = state;

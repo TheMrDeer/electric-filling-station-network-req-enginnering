@@ -4,10 +4,36 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.datatable.DataTable;
+
+import java.util.List;
+import java.util.Map;
 
 public class Charging {
+
+    @Given("the E.Power system is initialized")
+    public void the_e_power_system_is_initialized() {
+
+    }
+
     @And("a location {string} exists with the following stations:")
-    public void aLocationExistsWithTheFollowingStations(String arg0) {
+    public void aLocationExistsWithTheFollowingStations(String arg0, DataTable datatable) {
+
+        Location location = new Location("ID1", arg0, "", Status.Active);
+        location.addLocation();
+
+        List<Map<String, String>> rows = datatable.asMaps(String.class, String.class);
+
+
+        for (Map<String, String> row : rows) {
+            ChargingStation station = new ChargingStation(
+                    row.get("StationID"),
+                    StationState.fromLabel(row.get("State")),
+                    location.getLocationId(),
+                    ChargingStationType.valueOf(row.get("Type"))
+            );
+        }
+
     }
 
     @When("I search for available charging stations")

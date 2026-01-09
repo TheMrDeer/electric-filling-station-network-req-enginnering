@@ -6,6 +6,10 @@ import java.util.List;
 public class Location {
 
 
+    public String getLocationId() {
+        return locationId;
+    }
+
     private String locationId;
     private String name;
     private String address;

@@ -5,6 +5,11 @@ import java.util.Date;
 public class Price {
 
     private String priceId;
+
+    public double getRatePerMinute() {
+        return ratePerMinute;
+    }
+
     private double ratePerMinute;
     private Date validFrom;
     private Date validTo;
@@ -23,8 +28,6 @@ public class Price {
     public void setPrice(double ratePerMinute) {
         this.ratePerMinute = ratePerMinute;
     }
-    public double getPrice() {
-        return this.ratePerMinute;
-    }
+
 
 }

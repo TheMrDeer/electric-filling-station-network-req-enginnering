@@ -7,8 +7,22 @@ public class ChargingStation {
     }
 
     private String stationID;
+
+    public StationState getState() {
+        return state;
+    }
+
+    public void setState(StationState state) {
+        this.state = state;
+    }
+
     private StationState state;
     private String locationId;
+
+    public ChargingStationType getType() {
+        return type;
+    }
+
     ChargingStationType type;
 
     public Price getPrice() {
@@ -22,8 +36,6 @@ public class ChargingStation {
     private Price price;
 
 
-
-
     public ChargingStation(String stationID, StationState state, String locationId, ChargingStationType type, Price price) {
         this.stationID = stationID;
         this.state = state;
@@ -31,6 +43,7 @@ public class ChargingStation {
         this.type = type;
         this.price = price;
     }
+
 
     public void addChargingStation(){
         StationManager.addStation(this);

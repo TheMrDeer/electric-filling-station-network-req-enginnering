@@ -13,20 +13,29 @@ public class Session {
     private String stationId;
     private User user;
 
+    public boolean isSessionActive() {
+        return isSessionActive;
+    }
+
+    private boolean isSessionActive;
+
     public Session(String sessionId, String stationId, User user) {
         this.sessionId = sessionId;
         this.stationId = stationId;
         this.user = user;
     }
 
-    public void startSession(String stationId) {
-        this.stationId = stationId;
+    public void startSession() {
         this.startTime = LocalDateTime.now();
+        isSessionActive = true;
+        StationManager.setStationState(stationId, StationState.Occupied);
     }
 
     public void endSession() {
-        this.endTime = LocalDateTime.now();
+        this.endTime = this.startTime.plusMinutes((long) this.duration);
         this.duration = Duration.between(startTime, endTime).toMinutes();
+        isSessionActive = false;
+        StationManager.setStationState(stationId,StationState.inOperationFree);
     }
 
     public double calculateCost(double ratePerMinute) {

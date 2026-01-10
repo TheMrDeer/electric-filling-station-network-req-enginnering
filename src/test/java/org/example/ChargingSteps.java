@@ -107,29 +107,39 @@ public class ChargingSteps {
 
     @And("the station {string} state should change to {string}")
     public void theStationStateShouldChangeTo(String stationId, String state) {
-        assertEquals(StationState.fromLabel(state),StationManager.getStationById(stationId).getState());
+        assertEquals(StationState.fromLabel(state), StationManager.getStationById(stationId).getState());
     }
 
     @Given("I have an active charging session at {string}")
     public void iHaveAnActiveChargingSessionAt(String stationId) {
+        session = new Session("SESSION-1", stationId, c1);
+        session.startSession();
     }
 
-    private int sessionDuration;
+
     @And("the session has been running for {int} minutes")
     public void theSessionHasBeenRunningForMinutes(int arg0) {
-        sessionDuration = arg0;
+        session.setDuration(arg0);
     }
 
     @When("I end the charging session")
     public void iEndTheChargingSession() {
-
+        session.endSession();
     }
+
+    @Then("_the station {string} state should change to {string}")
+    public void _theStationStateShouldChangeTo(String arg0, String arg1) {//underline before, because of redundant methods
+        assertEquals(StationState.fromLabel(arg1), StationManager.getStationById(arg0).getState());
+    }
+
 
     @And("the cost of {double} should be deducted from my balance")
     public void theCostOfShouldBeDeductedFromMyBalance(double arg0) {
+        assertEquals(arg0,session.getTotalCost());
     }
 
     @And("my new balance should be {double}")
     public void myNewBalanceShouldBe(double arg0) {
+        assertEquals(arg0, c1.checkBalance());
     }
 }

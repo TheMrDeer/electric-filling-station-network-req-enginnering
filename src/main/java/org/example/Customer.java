@@ -8,7 +8,7 @@ public class Customer extends User {
         super(userId,name, email, password);
     }
 
-    private double checkBalance() {
+    public double checkBalance() {
         return this.accountBalance;
     }
 

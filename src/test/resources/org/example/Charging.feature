@@ -27,6 +27,6 @@ Feature: Charging
     Given I have an active charging session at "CS-103"
     And the session has been running for 30 minutes
     When I end the charging session
-    Then the station "CS-103" state should change to "in operation free"
+    Then _the station "CS-103" state should change to "in operation free"
     And the cost of 15.00 should be deducted from my balance
     And my new balance should be 35.00

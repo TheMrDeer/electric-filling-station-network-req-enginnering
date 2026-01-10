@@ -17,10 +17,19 @@ public class ChargingStation {
     }
 
     private StationState state;
+
+    public String getLocationId() {
+        return locationId;
+    }
+
     private String locationId;
 
     public ChargingStationType getType() {
         return type;
+    }
+
+    public void setType(ChargingStationType type) {
+        this.type = type;
     }
 
     ChargingStationType type;

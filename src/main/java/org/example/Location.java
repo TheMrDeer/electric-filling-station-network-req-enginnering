@@ -11,6 +11,11 @@ public class Location {
     }
 
     private String locationId;
+
+    public String getName() {
+        return name;
+    }
+
     private String name;
     private String address;
     private Status status; //enum? besser in Ch.Station?
@@ -21,6 +26,7 @@ public class Location {
         this.name = name;
         this.address = address;
         this.status = status;
+        addLocation();
     }
 
 

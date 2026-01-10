@@ -20,6 +20,7 @@ public class ChargingSteps {
     private Customer c1;
     private String currentStationId;
     private Session session;
+    private Location location;
 
     @Given("the E.Power system is initialized")
     public void theEPowerSystemIsInitialized() {
@@ -28,7 +29,7 @@ public class ChargingSteps {
     @And("a location {string} exists with the following stations:")
     public void aLocationExistsWithTheFollowingStations(String arg0, DataTable datatable) {
 
-        Location location = new Location("LOC-1", arg0, "", Status.Active);
+        location = new Location("LOC-1", arg0, "", Status.Active);
         location.addLocation();
 
         List<Map<String, String>> rows = datatable.asMaps(String.class, String.class);

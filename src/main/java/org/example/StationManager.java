@@ -10,6 +10,11 @@ public class StationManager {
     }
 
     private static List<ChargingStation> chargingStations = new ArrayList<>();
+
+    public static List<Location> getLocations() {
+        return locations;
+    }
+
     private static List<Location> locations = new ArrayList<>();
 
     public static void addStation(ChargingStation chargingStation) {
@@ -19,6 +24,11 @@ public class StationManager {
     public static void removeStation(ChargingStation chargingStation) {
         chargingStations.remove(chargingStation);
     }
+
+    public static void removeStationById(String stationId) {
+        chargingStations.removeIf(s -> s.getStationID().equals(stationId));
+    }
+
 
     /*public void setPrice(ChargingStation station, Price price) {
 
@@ -42,8 +52,17 @@ public class StationManager {
         return chargingStations.stream()
                 .filter(s -> s.getStationID().equals(stationId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Station not found: " + stationId));
+                .orElse(null);
     }
+
+    public static Location findLocationByName(String name){
+        return locations.stream()
+                .filter(l -> l.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+
 
     public static void setStationState(String stationId, StationState newState) {
         getStationById(stationId).setState(newState);

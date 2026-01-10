@@ -12,6 +12,7 @@ public abstract class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        UserManager.addUser(this);
     }
 
     public String getEmail() {
@@ -19,10 +20,10 @@ public abstract class User {
     }
 
     public void register() {
-        if (UserRepository.findByEmail(this.getEmail()) != null) {
+        if (UserManager.findByEmail(this.getEmail()) != null) {
             throw new IllegalStateException("User already exists");
         }
-        UserRepository.addUser(this);
+        UserManager.addUser(this);
         System.out.println("User successfully registered: " + getEmail());
     }
 

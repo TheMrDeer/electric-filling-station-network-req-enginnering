@@ -15,6 +15,7 @@ public class Price {
     private Date validTo;
 
 
+    public Price(){};
     public Price(double ratePerMinute) {
         setPrice(ratePerMinute);
     }

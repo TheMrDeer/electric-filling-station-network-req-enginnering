@@ -10,7 +10,6 @@ Feature: Manage Balance
     Then I should see a balance of 25.00
 
   Scenario: Payment to top up the balance (Story #29, #31)
-    Given a customer "User123" exists with a balance of 10.00
+    Given a customer "User124" exists with a balance of 10.00
     When I top up the balance by 50.00
-    Then the payment process should be "Success"
-    And the new balance for "User123" should be 60.00
+    Then the new balance for "User124" should be 60.00

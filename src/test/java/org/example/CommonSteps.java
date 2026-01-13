@@ -6,6 +6,9 @@ public class CommonSteps {
 
     @Given("the E.Power system is initialized")
     public void theEPowerSystemIsInitialized() {
+        StationManager.clearAll();
+        UserManager.clearUsers();
+        TestContext.currentCustomerId = null;
         System.out.println("System initialized/reset for test scenario.");
     }
 }

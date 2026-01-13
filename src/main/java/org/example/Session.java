@@ -8,28 +8,41 @@ public class Session {
     private String sessionId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private double duration;   // in Minuten
+    private long duration;   // in Minuten
     private double totalCost;
     private String stationId;
-    private User user;
+    private boolean isSessionActive;
+    private final Customer customer;
 
-    public Session(String sessionId, String stationId, User user) {
-        this.sessionId = sessionId;
-        this.stationId = stationId;
-        this.user = user;
+    public void setDuration(long minutes) {
+        this.duration = minutes;
+    }
+    public boolean isSessionActive() {
+        return isSessionActive;
     }
 
-    public void startSession(String stationId) {
+    public Session(String sessionId, String stationId, Customer customer) {
+        this.sessionId = sessionId;
         this.stationId = stationId;
+        this.customer = customer;
+    }
+
+    public void startSession() {
         this.startTime = LocalDateTime.now();
+        isSessionActive = true;
+        StationManager.setStationState(stationId, StationState.Occupied);
     }
 
     public void endSession() {
-        this.endTime = LocalDateTime.now();
-        this.duration = Duration.between(startTime, endTime).toMinutes();
+        this.endTime = this.startTime.plusMinutes(this.duration);
+        isSessionActive = false;
+        StationManager.setStationState(stationId,StationState.inOperationFree);
+        this.customer.updateBalance(calculateCost());
     }
 
-    public double calculateCost(double ratePerMinute) {
+    public double calculateCost() {
+        ChargingStation station = StationManager.getStationById(this.stationId);
+        double ratePerMinute = station.getPrice().getRatePerMinute();
         this.totalCost = duration * ratePerMinute;
         return totalCost;
     }
@@ -58,8 +71,8 @@ public class Session {
         return stationId;
     }
 
-    public String getUserId() {
-        return this.user.getUserId();
+    public String getCutomerId() {
+        return this.customer.getUserId();
     }
 }
 

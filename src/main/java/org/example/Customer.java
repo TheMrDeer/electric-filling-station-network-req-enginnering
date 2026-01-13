@@ -2,13 +2,13 @@ package org.example;
 
 public class Customer extends User {
 
-    private double accountBalance;
+    private double accountBalance = 0.0;
 
     public Customer (String userId, String name, String email, String password) {
         super(userId,name, email, password);
     }
 
-    private double checkBalance() {
+    public double checkBalance() {
         return this.accountBalance;
     }
 
@@ -32,4 +32,7 @@ public class Customer extends User {
         return this.checkBalance();
     }
 
+    public String getCustomerInfo(){
+        return getUserId() +" "+ this.accountBalance;
+    }
 }

@@ -14,9 +14,17 @@ public class ManageBalanceSteps {
 
     @Given("a customer {string} exists with a balance of {double}")
     public void _aCustomerExistsWithABalanceOf(String customerId, double amount) {
-        customer = new Customer(customerId, "", "", "");
+        customer = UserManager.getCustomerById(customerId);
+        if (customer == null) {
+            customer = new Customer(customerId, "", "", "");
+        } else {
+            UserManager.removeUser(customer);
+        }
         UserManager.addUser(customer);
-        UserManager.getCustomerById(customerId).rechargeAccount(amount);
+        if (amount > 0) {
+            customer.rechargeAccount(amount);
+        }
+        TestContext.currentCustomerId = customerId;
     }
 
     @When("I check the available balance for {string}")
@@ -29,12 +37,6 @@ public class ManageBalanceSteps {
         assertEquals(amount, balance);
     }
 
-    @Given("a customer {string} exists with a balance of {double}")
-    public void __aCustomerExistsWithABalanceOf(String customerId, double amount) {
-        customer = UserManager.getCustomerById(customerId);
-        UserManager.getCustomerById(customerId).rechargeAccount(amount);
-    }
-
     @When("I top up the balance by {double}")
     public void iTopUpTheBalanceBy(double amount) {
         UserManager.getCustomerById("User124").rechargeAccount(amount);
@@ -42,6 +44,6 @@ public class ManageBalanceSteps {
 
     @Then("the new balance for {string} should be {double}")
     public void theNewBalanceForShouldBe(String customerId, double balance) {
-        assertEquals(balance,customer.checkBalance());
+        assertEquals(balance, UserManager.getCustomerById(customerId).checkBalance());
     }
 }

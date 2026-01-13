@@ -25,6 +25,8 @@ public class ConfigureLocationPrices {
     public void aLocationNamedExists(String arg0) {
         pricesByLocationAndType.clear();
         viewedPrices.clear();
+        StationManager.clearAll();
+        new Location("LOC-1", arg0, "", Status.Active);
     }
 
     @When("I set the price for {string} charging at {string} to {double} per minute")

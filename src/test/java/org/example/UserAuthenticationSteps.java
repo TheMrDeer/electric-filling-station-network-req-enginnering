@@ -31,6 +31,10 @@ public class UserAuthenticationSteps {
     @Given("a customer {string} exists")
     public void aCustomerExists(String arg0) {
         customer = UserManager.getCustomerById(arg0);
+        if (customer == null) {
+            customer = new Customer(arg0,"","","");
+            UserManager.addUser(customer);
+        }
     }
 
     @When("I delete the account for {string}")

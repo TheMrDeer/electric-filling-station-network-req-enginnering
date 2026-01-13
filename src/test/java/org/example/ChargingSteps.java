@@ -6,7 +6,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +20,6 @@ public class ChargingSteps {
     private String currentStationId;
     private Session session;
     private Location location;
-
-    @Given("the E.Power system is initialized")
-    public void theEPowerSystemIsInitialized() {
-    }
 
     @And("a location {string} exists with the following stations:")
     public void aLocationExistsWithTheFollowingStations(String arg0, DataTable datatable) {
@@ -47,13 +42,6 @@ public class ChargingSteps {
             stationsById.put(station.getStationID(), station);
         }
     }
-
-    @And("a customer {string} exists with a balance of {double}")
-    public void aCustomerExistsWithABalanceOf(String arg0, double arg1) {
-        c1 = new Customer("C1", arg0, "", "");
-        c1.rechargeAccount(arg1);
-    }
-
 
     @When("I search for available charging stations")
     public void iSearchForAvailableChargingStations() {
@@ -97,7 +85,7 @@ public class ChargingSteps {
 
     @When("I start a charging session with energy type {string}")
     public void iStartAChargingSessionWithEnergyType(String type) {
-        session = new Session("SESSION-1", currentStationId, c1);
+        session = new Session("SESSION-1", currentStationId, getCurrentCustomer());
         session.startSession();
     }
 
@@ -113,7 +101,7 @@ public class ChargingSteps {
 
     @Given("I have an active charging session at {string}")
     public void iHaveAnActiveChargingSessionAt(String stationId) {
-        session = new Session("SESSION-1", stationId, c1);
+        session = new Session("SESSION-1", stationId, getCurrentCustomer());
         session.startSession();
     }
 
@@ -141,6 +129,13 @@ public class ChargingSteps {
 
     @And("my new balance should be {double}")
     public void myNewBalanceShouldBe(double arg0) {
-        assertEquals(arg0, c1.checkBalance());
+        assertEquals(arg0, getCurrentCustomer().checkBalance());
+    }
+
+    private Customer getCurrentCustomer() {
+        if (c1 == null && TestContext.currentCustomerId != null) {
+            c1 = UserManager.getCustomerById(TestContext.currentCustomerId);
+        }
+        return c1;
     }
 }

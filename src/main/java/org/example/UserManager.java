@@ -15,6 +15,10 @@ public class UserManager {
         users.remove(user);
     }
 
+    public static void clearUsers() {
+        users.clear();
+    }
+
     public static User findByEmail(String email) {
         for (User u : users) {
             if (u.getEmail().equals(email)) {
@@ -31,6 +35,5 @@ public class UserManager {
                 .orElse(null);
     }
 }
-
 
 

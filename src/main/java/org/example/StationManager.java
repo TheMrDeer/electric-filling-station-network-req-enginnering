@@ -42,6 +42,11 @@ public class StationManager {
         locations.remove(location);
     }
 
+    public static void clearAll() {
+        chargingStations.clear();
+        locations.clear();
+    }
+
     public void printStations() {
         for (ChargingStation cs : chargingStations) {
             cs.print();

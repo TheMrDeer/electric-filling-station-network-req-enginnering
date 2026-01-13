@@ -12,6 +12,9 @@ public abstract class User {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public void addUser() {
         UserManager.addUser(this);
     }
 

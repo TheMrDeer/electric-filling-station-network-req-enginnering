@@ -13,7 +13,7 @@ public class ManageBalanceSteps {
     private double balance;
 
     @Given("a customer {string} exists with a balance of {double}")
-    public void aCustomerExistsWithABalanceOf(String customerId, double amount) {
+    public void _aCustomerExistsWithABalanceOf(String customerId, double amount) {
         customer = new Customer(customerId, "", "", "");
         UserManager.getCustomerById(customerId).rechargeAccount(amount);
     }
@@ -29,7 +29,7 @@ public class ManageBalanceSteps {
     }
 
     @Given("a customer {string} exists with a balance of {double}")
-    public void _aCustomerExistsWithABalanceOf(String customerId, double amount) {
+    public void __aCustomerExistsWithABalanceOf(String customerId, double amount) {
         customer = new Customer(customerId,"","","");
         UserManager.getCustomerById(customerId).rechargeAccount(amount);
     }

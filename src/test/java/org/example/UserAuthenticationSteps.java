@@ -5,20 +5,22 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserAuthenticationSteps {
+
+
 
     private Customer customer;
     @When("I register a new account with Customer Identity {string}")
     public void iRegisterANewAccountWithCustomerIdentity(String arg0) {
         customer = new Customer(arg0,"","","");
+        customer.addUser();
     }
 
     @Then("a Customer Account should be created for {string}")
     public void aCustomerAccountShouldBeCreatedFor(String arg0) {
-        assertEquals(arg0,UserManager.getCustomerById(arg0).getUserId());
+        assertNotNull(UserManager.getCustomerById(arg0));
     }
 
     @And("the initial Balance of {string} should be {double}")
@@ -28,7 +30,7 @@ public class UserAuthenticationSteps {
 
     @Given("a customer {string} exists")
     public void aCustomerExists(String arg0) {
-        customer = new Customer(arg0,"","","");
+        customer = UserManager.getCustomerById(arg0);
     }
 
     @When("I delete the account for {string}")
@@ -40,5 +42,4 @@ public class UserAuthenticationSteps {
     public void theCustomerShouldNoLongerBeInTheSystem(String arg0) {
         assertNull(UserManager.getCustomerById(arg0));
     }
-
 }

@@ -25,6 +25,7 @@ public class ManageChargingStationSteps {
 
     @Given("a station {string} exists at {string}")
     public void aStationExistsAt(String stationId, String locationName) {
+        StationManager.removeStationById(stationId);
         StationManager.addStation(new ChargingStation(stationId,StationState.inOperationFree,locationName,ChargingStationType.AC,new Price()));
     }
 
@@ -49,6 +50,14 @@ public class ManageChargingStationSteps {
 
     @Given("a station {string} exists")
     public void aStationExists(String stationId) {
+        StationManager.removeStationById(stationId);
+        StationManager.addStation(new ChargingStation(
+                stationId,
+                StationState.inOperationFree,
+                "LOC-1",
+                ChargingStationType.AC,
+                new Price()
+        ));
     }
 
     @When("I set the state of {string} to {string}")
@@ -63,6 +72,7 @@ public class ManageChargingStationSteps {
 
     @Given("the following stations exist at {string}:")
     public void theFollowingStationsExistAt(String locationName, DataTable table) {
+        StationManager.clearAll();
         Location location = new Location("LOC-1", locationName, "", Status.Active);
         location.addLocation();
 

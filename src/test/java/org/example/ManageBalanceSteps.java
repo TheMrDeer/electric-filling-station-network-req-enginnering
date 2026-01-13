@@ -17,9 +17,13 @@ public class ManageBalanceSteps {
         customer = UserManager.getCustomerById(customerId);
         if (customer == null) {
             customer = new Customer(customerId, "", "", "");
-            UserManager.addUser(customer);
+        } else {
+            UserManager.removeUser(customer);
         }
-        customer.rechargeAccount(amount);
+        UserManager.addUser(customer);
+        if (amount > 0) {
+            customer.rechargeAccount(amount);
+        }
         TestContext.currentCustomerId = customerId;
     }
 

@@ -39,7 +39,8 @@ public class ManageBalanceSteps {
 
     @When("I top up the balance by {double}")
     public void iTopUpTheBalanceBy(double amount) {
-        UserManager.getCustomerById("User124").rechargeAccount(amount);
+        String customerId = TestContext.currentCustomerId;
+        UserManager.getCustomerById(customerId).rechargeAccount(amount);
     }
 
     @Then("the new balance for {string} should be {double}")

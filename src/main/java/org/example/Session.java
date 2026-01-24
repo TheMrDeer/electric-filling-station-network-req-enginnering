@@ -9,6 +9,7 @@ public class Session {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long duration;   // in Minuten
+    private double chargedEnergy; // in kWh
     private double totalCost;
     private String stationId;
     private boolean isSessionActive;
@@ -17,6 +18,15 @@ public class Session {
     public void setDuration(long minutes) {
         this.duration = minutes;
     }
+    
+    public void setChargedEnergy(double kwh) {
+        this.chargedEnergy = kwh;
+    }
+
+    public double getChargedEnergy() {
+        return chargedEnergy;
+    }
+
     public boolean isSessionActive() {
         return isSessionActive;
     }
@@ -43,7 +53,8 @@ public class Session {
     public double calculateCost() {
         ChargingStation station = StationManager.getStationById(this.stationId);
         double ratePerMinute = station.getPrice().getRatePerMinute();
-        this.totalCost = duration * ratePerMinute;
+        double ratePerKwh = station.getPrice().getRatePerKwh();
+        this.totalCost = (duration * ratePerMinute) + (chargedEnergy * ratePerKwh);
         return totalCost;
     }
 
@@ -75,6 +86,3 @@ public class Session {
         return this.customer.getUserId();
     }
 }
-
-
-

@@ -7,13 +7,19 @@ public class Invoice {
     private String invoiceId;
     private String sessionId;
     private double totalCost;
+    private double loadedEnergy; // in kWh
     private Date date;
     private String status;
 
     public Invoice(String invoiceId, String sessionId, double totalCost) {
+        this(invoiceId, sessionId, totalCost, 0.0);
+    }
+
+    public Invoice(String invoiceId, String sessionId, double totalCost, double loadedEnergy) {
         this.invoiceId = invoiceId;
         this.sessionId = sessionId;
         this.totalCost = totalCost;
+        this.loadedEnergy = loadedEnergy;
         this.date = new Date();
         this.status = "CREATED";
     }
@@ -27,6 +33,7 @@ public class Invoice {
         return "Invoice ID: " + invoiceId + "\n"
                 + "Session ID: " + sessionId + "\n"
                 + "Total Cost: " + totalCost + "\n"
+                + "Loaded Energy: " + loadedEnergy + " kWh\n"
                 + "Date: " + date + "\n"
                 + "Status: " + status;
     }
@@ -43,6 +50,10 @@ public class Invoice {
         return totalCost;
     }
 
+    public double getLoadedEnergy() {
+        return loadedEnergy;
+    }
+
     public Date getDate() {
         return date;
     }
@@ -56,9 +67,3 @@ public class Invoice {
         this.status = status;
     }
 }
-
-
-
-
-
-

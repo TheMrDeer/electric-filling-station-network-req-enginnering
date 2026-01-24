@@ -71,6 +71,11 @@ public class ReceiveInvoicesSteps {
         assertEquals(amount, invoiceAmount);
     }
 
+    @Then("the charging station type is ..")
+    public void theChargingStationTypeIs() {
+        // Placeholder step as per feature file comment
+    }
+
     private String parseLocation(String stationValue) {
         String[] parts = stationValue.split("\\s+-\\s+");
         return parts.length > 0 ? parts[0] : stationValue;

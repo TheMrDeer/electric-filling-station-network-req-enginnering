@@ -31,3 +31,12 @@ Feature: Manage Charging Stations
       | CS-102 | DC   | in operation free |
     When I request a list of "AC" stations that are "in operation free"
     Then I should receive only station "CS-100"
+
+  Scenario: Prevent adding a charging station with a duplicate ID (Edge Case)
+    Given a station "CS-001" exists at "Vienna Central"
+    When I attempt to add a charging station with ID "CS-001" to "Vienna Central"
+    Then I should receive an error message "Station ID already exists"
+
+  Scenario: Prevent adding a charging station to a non-existent location (Edge Case)
+    When I attempt to add a charging station with ID "CS-999" to "Unknown Location"
+    Then I should receive an error message "Location does not exist"

@@ -18,6 +18,15 @@ public class StationManager {
     private static List<Location> locations = new ArrayList<>();
 
     public static void addStation(ChargingStation chargingStation) {
+        if (getStationById(chargingStation.getStationID()) != null) {
+            throw new IllegalArgumentException("Station ID already exists");
+        }
+        boolean locationExists = locations.stream()
+                .anyMatch(l -> l.getLocationId().equals(chargingStation.getLocationId()));
+
+        if (!locationExists) {
+            throw new IllegalArgumentException("Location does not exist");
+        }
         chargingStations.add(chargingStation);
     }
 

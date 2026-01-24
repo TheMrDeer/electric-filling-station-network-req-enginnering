@@ -32,6 +32,7 @@ public class ConfigureLocationPrices {
     @When("I set the price for {string} charging at {string} to {double} per minute")
     public void iSetThePriceForChargingAtToPerMinute(String type, String locationName, double ratePerMinute) {
         pricesByLocationAndType.put(key(locationName, type), ratePerMinute);
+        updateStationPrice(locationName, type, ratePerMinute);
     }
 
     @Then("the price configuration for {string} at {string} should be {double}")
@@ -50,6 +51,22 @@ public class ConfigureLocationPrices {
             String type = row.get("Type");
             double price = Double.parseDouble(row.get("Price"));
             pricesByLocationAndType.put(key(locationName, type), price);
+            updateStationPrice(locationName, type, price);
+        }
+    }
+
+    private void updateStationPrice(String locationName, String typeStr, double priceValue) {
+        Location loc = StationManager.findLocationByName(locationName);
+        if (loc != null) {
+            ChargingStationType type = ChargingStationType.valueOf(typeStr);
+            StationManager.getChargingStations().stream()
+                    .filter(s -> s.getLocationId().equals(loc.getLocationId()) && s.getType() == type)
+                    .forEach(s -> {
+                        // Create a new Price object or update existing.
+                        // Since we don't have kWh yet, we just use the double constructor.
+                        // We will update this later to support kWh if needed, but for now this fixes the test.
+                        s.setPrice(new Price(priceValue));
+                    });
         }
     }
 

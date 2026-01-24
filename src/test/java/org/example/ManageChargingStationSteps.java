@@ -13,20 +13,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ManageChargingStationSteps {
+
+    private String lastError;
+
     @When("I add a charging station with ID {string} to {string}")
     public void iAddAChargingStationWithIDTo(String stationId, String locationName) {
-        StationManager.addStation(new ChargingStation(stationId,StationState.inOperationFree,locationName,ChargingStationType.AC,new Price()));
+        Location location = StationManager.findLocationByName(locationName);
+        String locationId = (location != null) ? location.getLocationId() : locationName;
+        StationManager.addStation(new ChargingStation(stationId,StationState.inOperationFree,locationId,ChargingStationType.AC,new Price()));
     }
 
     @Then("the station {string} should be associated with {string}")
     public void theStationShouldBeAssociatedWith(String stationId, String locationName) {
-        assertEquals(locationName,StationManager.getStationById(stationId).getLocationId());
+        // We need to check against the location ID, but the test passes the name.
+        // However, since we now store the ID in the station, we should look up the location by name to get its ID for comparison.
+        Location location = StationManager.findLocationByName(locationName);
+        String expectedLocationId = (location != null) ? location.getLocationId() : locationName;
+        assertEquals(expectedLocationId, StationManager.getStationById(stationId).getLocationId());
     }
 
     @Given("a station {string} exists at {string}")
     public void aStationExistsAt(String stationId, String locationName) {
         StationManager.removeStationById(stationId);
-        StationManager.addStation(new ChargingStation(stationId,StationState.inOperationFree,locationName,ChargingStationType.AC,new Price()));
+        Location location = StationManager.findLocationByName(locationName);
+        String locationId = (location != null) ? location.getLocationId() : locationName;
+        StationManager.addStation(new ChargingStation(stationId,StationState.inOperationFree,locationId,ChargingStationType.AC,new Price()));
     }
 
     @When("I remove the charging station {string} from {string}")
@@ -51,10 +62,17 @@ public class ManageChargingStationSteps {
     @Given("a station {string} exists")
     public void aStationExists(String stationId) {
         StationManager.removeStationById(stationId);
+        // We need a valid location for this to work with the new validation.
+        // Assuming "LOC-1" exists from Background or we create a dummy one.
+        // But this step is used in "Set charging station state" scenario which has "Background: Given a location named "Vienna Central" exists".
+        // So we can use "Vienna Central".
+        Location location = StationManager.findLocationByName("Vienna Central");
+        String locationId = (location != null) ? location.getLocationId() : "LOC-1";
+
         StationManager.addStation(new ChargingStation(
                 stationId,
                 StationState.inOperationFree,
-                "LOC-1",
+                locationId,
                 ChargingStationType.AC,
                 new Price()
         ));
@@ -74,7 +92,9 @@ public class ManageChargingStationSteps {
     public void theFollowingStationsExistAt(String locationName, DataTable table) {
         StationManager.clearAll();
         Location location = new Location("LOC-1", locationName, "", Status.Active);
-        location.addLocation();
+        // location.addLocation(); // Constructor already adds it? Let's check Location.java. Yes it does.
+        // But wait, StationManager.clearAll() clears locations too.
+        // So creating new Location adds it to the list.
 
         List<Map<String, String>> rows = table.asMaps(String.class, String.class);
 
@@ -87,7 +107,10 @@ public class ManageChargingStationSteps {
                     ChargingStationType.valueOf(row.get("Type")),
                     new Price()
             );
-            station.addChargingStation();;
+            // station.addChargingStation(); // This calls StationManager.addStation(this)
+            // Since we cleared all, there are no duplicates.
+            // And location exists.
+            station.addChargingStation();
         }
     }
 
@@ -113,5 +136,19 @@ public class ManageChargingStationSteps {
 
         assertEquals(stationId,
                 chargingStationsByTypeAndState.get(0).getStationID());
+    }
+
+    @When("I attempt to add a charging station with ID {string} to {string}")
+    public void iAttemptToAddAChargingStationWithIDTo(String stationId, String locationName) {
+        try {
+            iAddAChargingStationWithIDTo(stationId, locationName);
+        } catch (IllegalArgumentException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive an error message {string}")
+    public void iShouldReceiveAnErrorMessage(String expectedError) {
+        assertEquals(expectedError, lastError);
     }
 }

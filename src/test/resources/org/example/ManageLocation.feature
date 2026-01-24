@@ -1,6 +1,6 @@
 Feature: Manage Locations
   As the Owner (E.Power), I want to manage the infrastructure network.
-
+# Network status evtl als eigenes Feature anlegen.
   Background:
     Given the E.Power system is initialized
 

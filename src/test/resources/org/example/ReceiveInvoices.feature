@@ -1,6 +1,6 @@
 Feature: Receive Invoice
   As a Customer, I want to receive a transparent invoice after using the service.
-
+# Noch einmal ansehen was in der REchnung beeinhaltet ist
   Background:
     Given a finished charging session exists for customer "User123"
     And the session details are:
@@ -15,3 +15,4 @@ Feature: Receive Invoice
     And the invoice should contain the location "Vienna Central"
     And the invoice should list "30 min" duration
     And the final amount on the invoice should be 15.00
+    And the charging station type is ..

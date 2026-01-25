@@ -1,25 +1,17 @@
 package org.example;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Location {
 
-
-    public String getLocationId() {
-        return locationId;
-    }
-
     private String locationId;
-
-    public String getName() {
-        return name;
-    }
-
     private String name;
     private String address;
-    private Status status; //enum? besser in Ch.Station?
-    List<ChargingStation> chargingStations = new ArrayList<>(); // fehlt im UML
+    private Status status;
+    private List<ChargingStation> chargingStations = new ArrayList<>();
+    private List<Price> priceHistory = new ArrayList<>();
 
     public Location(String locationId, String name, String address, Status status) {
         this.locationId = locationId;
@@ -29,6 +21,13 @@ public class Location {
         addLocation();
     }
 
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void addLocation() {
         StationManager.addLocation(this);
@@ -44,5 +43,31 @@ public class Location {
 
     public String getLocationInfo() {
         return String.format("LocationID: %s, Name: %s, Address: %s", this.locationId, this.name, this.address);
+    }
+
+    public void addPrice(Price newPrice) {
+        // Optional: Close the previous price for that type
+        for (Price p : priceHistory) {
+            if (p.getType() == newPrice.getType() && p.getValidTo() == null) {
+                if (newPrice.getValidFrom().isAfter(p.getValidFrom())) {
+                    p.setValidTo(newPrice.getValidFrom());
+                }
+            }
+        }
+        priceHistory.add(newPrice);
+    }
+
+    public Price getPriceFor(ChargingStationType type, LocalDateTime time) {
+        for (Price price : priceHistory) {
+            if (price.getType() == type) {
+                boolean isStarted = !time.isBefore(price.getValidFrom());
+                boolean isNotEnded = price.getValidTo() == null || time.isBefore(price.getValidTo());
+                
+                if (isStarted && isNotEnded) {
+                    return price;
+                }
+            }
+        }
+        return null; // Or throw exception if no price found
     }
 }

@@ -1,15 +1,21 @@
 Feature: Configure Location Prices
-  As the Owner, I want to manage pricing configurations.
+  As the Owner, I want to manage pricing configurations with temporal validity.
 
-  Scenario: Set price per minute of charging per location and charging type (Story #13)
+  Scenario: Set price per minute and kWh of charging per location and charging type with start date
     Given a location named "Vienna Central" exists
-    When I set the price for "DC" charging at "Vienna Central" to 0.50 per minute
-    Then the price configuration for "DC" at "Vienna Central" should be 0.50
+    When "Vienna Central" has the following prices active from "2023-01-01T00:00":
+      | Type | PricePerMin | PricePerKwh |
+      | AC   | 0.10        | 0.35        |
+      | DC   | 0.20        | 0.60        |
+    Then the price for "AC" at "Vienna Central" on "2023-01-15T12:00" should be 0.10 per minute and 0.35 per kWh
 
-  Scenario: View current prices by location (Story #14)
-    Given "Vienna Central" has the following prices:
-      | Type | Price |
-      | AC   | 0.30  |
-      | DC   | 0.50  |
-    When I view prices for "Vienna Central"
-    Then I should see 0.30 for "AC" and 0.50 for "DC"
+  Scenario: Verify temporal validity of prices
+    Given a location named "Vienna Central" exists
+    And "Vienna Central" has the following prices active from "2023-01-01T00:00":
+      | Type | PricePerMin | PricePerKwh |
+      | AC   | 0.10        | 0.35        |
+    And "Vienna Central" has the following prices active from "2023-02-01T00:00":
+      | Type | PricePerMin | PricePerKwh |
+      | AC   | 0.15        | 0.40        |
+    Then the price for "AC" at "Vienna Central" on "2023-01-15T12:00" should be 0.10 per minute and 0.35 per kWh
+    And the price for "AC" at "Vienna Central" on "2023-02-02T12:00" should be 0.15 per minute and 0.40 per kWh

@@ -2,9 +2,11 @@ package org.example;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,14 +41,10 @@ public class NetworkInformationSteps {
 
     private void checkPriceForType(Location location, String typeStr, double expectedPrice) {
         ChargingStationType type = ChargingStationType.valueOf(typeStr);
+        Price price = location.getPriceFor(type, LocalDateTime.now());
         
-        ChargingStation station = StationManager.getChargingStations().stream()
-                .filter(s -> s.getLocationId().equals(location.getLocationId()) && s.getType() == type)
-                .findFirst()
-                .orElse(null);
-
-        assertNotNull(station, "No station of type " + typeStr + " found in " + location.getName());
-        assertEquals(expectedPrice, station.getPrice().getRatePerMinute(), 0.001);
+        assertNotNull(price, "No price found for " + typeStr + " at " + location.getName());
+        assertEquals(expectedPrice, price.getPricePerMinute(), 0.001);
     }
 
     @And("I should see the State of Charging Station {string} as {string}")
@@ -70,5 +68,28 @@ public class NetworkInformationSteps {
     @And("the details should include the Price Configuration of {double} for {string}")
     public void theDetailsShouldIncludeThePriceConfigurationOfFor(double price, String typeStr) {
         checkPriceForType(locationDetails, typeStr, price);
+    }
+
+    @Given("the network has the following stations at {string}:")
+    public void theNetworkHasTheFollowingStationsAt(String locationName, DataTable table) {
+        Location location = StationManager.findLocationByName(locationName);
+        if (location == null) {
+            location = new Location("LOC-" + locationName.hashCode(), locationName, "Address", Status.Active);
+        }
+
+        List<Map<String, String>> rows = table.asMaps(String.class, String.class);
+        for (Map<String, String> row : rows) {
+            String id = row.get("Station ID");
+            String typeStr = row.get("Type");
+            String statusStr = row.get("Status");
+            
+            ChargingStationType type = ChargingStationType.valueOf(typeStr);
+            StationState state = StationState.fromLabel(statusStr);
+            
+            Price dummyPrice = new Price(); 
+            
+            ChargingStation station = new ChargingStation(id, state, location.getLocationId(), type, dummyPrice);
+            station.addChargingStation();
+        }
     }
 }

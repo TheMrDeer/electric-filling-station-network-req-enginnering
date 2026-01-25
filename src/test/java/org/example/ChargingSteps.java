@@ -1,11 +1,13 @@
 package org.example;
 
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,11 @@ public class ChargingSteps {
     private Session session;
     private Location location;
 
+    @Before
+    public void setUp() {
+        StationManager.clearAll();
+    }
+
     @And("a location {string} exists with the following stations:")
     public void aLocationExistsWithTheFollowingStations(String arg0, DataTable datatable) {
 
@@ -33,13 +40,18 @@ public class ChargingSteps {
         for (Map<String, String> row : rows) {
             double pricePerMin = Double.parseDouble(row.get("PricePerMin"));
             double pricePerKwh = row.containsKey("PricePerKwh") ? Double.parseDouble(row.get("PricePerKwh")) : 0.0;
+            ChargingStationType type = ChargingStationType.valueOf(row.get("Type"));
+
+            // Create a Price object that is valid from the past so it applies now
+            Price price = new Price(location.getLocationId(), type, pricePerMin, pricePerKwh, LocalDateTime.MIN, null);
+            location.addPrice(price);
 
             ChargingStation station = new ChargingStation(
                     row.get("StationID"),
                     StationState.fromLabel(row.get("State")),
                     location.getLocationId(),
-                    ChargingStationType.valueOf(row.get("Type")),
-                    new Price(pricePerMin, pricePerKwh)
+                    type,
+                    price // Keep passing price for backward compatibility if needed, though Session uses Location price
             );
             station.addChargingStation();
             stationsById.put(station.getStationID(), station);
@@ -65,6 +77,8 @@ public class ChargingSteps {
     public void iShouldSeeWithTypeAndPrice(String stationID, String type, double price) {
         ChargingStation chargingStation = stationsById.get(stationID);
         assertEquals(ChargingStationType.valueOf(type), chargingStation.getType());
+        // Check against the location's current price for consistency, or the station's price if that's what's being tested
+        // Since we updated the station with the price, this should still work.
         assertEquals(price, chargingStation.getPrice().getRatePerMinute());
     }
 

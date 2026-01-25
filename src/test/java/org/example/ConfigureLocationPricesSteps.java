@@ -18,7 +18,7 @@ public class ConfigureLocationPricesSteps {
 
     @When("{string} has the following prices active from {string}:")
     public void hasTheFollowingPricesActiveFrom(String locationName, String dateString, DataTable dataTable) {
-        Location location = StationManager.findLocationByName(locationName);
+        Location location = StationManager.getInstance().findLocationByName(locationName);
         Assertions.assertNotNull(location, "Location not found: " + locationName);
 
         LocalDateTime validFrom = LocalDateTime.parse(dateString);
@@ -37,7 +37,7 @@ public class ConfigureLocationPricesSteps {
 
     @Then("the price for {string} at {string} on {string} should be {double} per minute and {double} per kWh")
     public void thePriceForAtOnShouldBePerMinuteAndPerKWh(String typeStr, String locationName, String dateString, double expectedMin, double expectedKwh) {
-        Location location = StationManager.findLocationByName(locationName);
+        Location location = StationManager.getInstance().findLocationByName(locationName);
         Assertions.assertNotNull(location, "Location not found: " + locationName);
 
         LocalDateTime checkTime = LocalDateTime.parse(dateString);
@@ -53,7 +53,7 @@ public class ConfigureLocationPricesSteps {
 
     @Given("{string} has the following prices:")
     public void hasTheFollowingPrices(String locationName, DataTable table) {
-        Location location = StationManager.findLocationByName(locationName);
+        Location location = StationManager.getInstance().findLocationByName(locationName);
         Assertions.assertNotNull(location, "Location not found: " + locationName);
 
         List<Map<String, String>> rows = table.asMaps(String.class, String.class);
@@ -71,7 +71,7 @@ public class ConfigureLocationPricesSteps {
     @When("I try to set the price for {string} at {string} to {double}")
     public void iTryToSetThePriceForAtTo(String typeStr, String locationName, double priceVal) {
         try {
-            Location location = StationManager.findLocationByName(locationName);
+            Location location = StationManager.getInstance().findLocationByName(locationName);
             ChargingStationType type = ChargingStationType.valueOf(typeStr);
             // Assuming we are setting price per minute for simplicity, or both
             new Price(location.getLocationId(), type, priceVal, 0.0, LocalDateTime.now(), null);

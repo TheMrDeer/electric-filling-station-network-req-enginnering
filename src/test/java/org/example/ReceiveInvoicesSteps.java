@@ -22,7 +22,7 @@ public class ReceiveInvoicesSteps {
 
     @Before
     public void cleanup() {
-        StationManager.clearAll();
+        StationManager.getInstance().clearAll();
     }
 
     @Given("a customer {string} exists with balance {double}")
@@ -52,7 +52,7 @@ public class ReceiveInvoicesSteps {
             double kwh = Double.parseDouble(row.get("kWh"));
             
             // 1. Setup Location and Station
-            Location location = StationManager.findLocationByName(locName);
+            Location location = StationManager.getInstance().findLocationByName(locName);
             if (location == null) {
                 location = new Location("LOC-" + locName.hashCode(), locName, "Address", Status.Active);
                 
@@ -71,7 +71,7 @@ public class ReceiveInvoicesSteps {
             
             ChargingStation station = new ChargingStation(stationId, StationState.inOperationFree, location.getLocationId(), type, null);
             location.addChargingStationToLocation(station);
-            StationManager.addStation(station);
+            StationManager.getInstance().addStation(station);
 
             // 2. Create and Run Session
             Session session = new Session("S-" + System.nanoTime(), stationId, customer);

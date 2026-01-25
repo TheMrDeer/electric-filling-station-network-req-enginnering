@@ -30,11 +30,11 @@ public class Location {
     }
 
     public void addLocation() {
-        StationManager.addLocation(this);
+        StationManager.getInstance().addLocation(this);
     }
 
     public void deleteLocation() {
-        StationManager.removeLocation(this);
+        StationManager.getInstance().removeLocation(this);
     }
 
     public void addChargingStationToLocation(ChargingStation chargingStation) {

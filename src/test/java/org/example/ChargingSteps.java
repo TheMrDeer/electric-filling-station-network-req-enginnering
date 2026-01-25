@@ -25,7 +25,7 @@ public class ChargingSteps {
 
     @Before
     public void setUp() {
-        StationManager.clearAll();
+        StationManager.getInstance().clearAll();
     }
 
     @And("a location {string} exists with the following stations:")
@@ -61,7 +61,7 @@ public class ChargingSteps {
     @When("I search for available charging stations")
     public void iSearchForAvailableChargingStations() {
         stationsById.clear();
-        for (ChargingStation cs : StationManager.getChargingStations()) {
+        for (ChargingStation cs : StationManager.getInstance().getChargingStations()) {
             stationsById.put(cs.getStationID(), cs);
         }
     }
@@ -114,7 +114,7 @@ public class ChargingSteps {
 
     @And("the station {string} state should change to {string}")
     public void theStationStateShouldChangeTo(String stationId, String state) {
-        assertEquals(StationState.fromLabel(state), StationManager.getStationById(stationId).getState());
+        assertEquals(StationState.fromLabel(state), StationManager.getInstance().getStationById(stationId).getState());
     }
 
     @Given("I have an active charging session at {string}")
@@ -141,7 +141,7 @@ public class ChargingSteps {
 
     @Then("_the station {string} state should change to {string}")
     public void _theStationStateShouldChangeTo(String arg0, String arg1) {//underline before, because of redundant methods
-        assertEquals(StationState.fromLabel(arg1), StationManager.getStationById(arg0).getState());
+        assertEquals(StationState.fromLabel(arg1), StationManager.getInstance().getStationById(arg0).getState());
     }
 
 

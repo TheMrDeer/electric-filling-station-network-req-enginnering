@@ -19,7 +19,7 @@ public class ManageLocationSteps {
 
     @Then("the location {string} should be listed in the Charging Network")
     public void theLocationShouldBeListedInTheChargingNetwork(String locationName) {
-        for(Location l:StationManager.getLocations()) {
+        for(Location l:StationManager.getInstance().getLocations()) {
             if (l.getName().equals(locationName)) {
                 isListed = true;
                 break;
@@ -41,11 +41,11 @@ public class ManageLocationSteps {
 
     @When("I remove the location {string}")
     public void iRemoveTheLocation(String locationName) {
-        StationManager.removeLocation(StationManager.findLocationByName(locationName));
+        StationManager.getInstance().removeLocation(StationManager.getInstance().findLocationByName(locationName));
     }
 
     @Then("the location {string} should no longer exist in the network")
     public void theLocationShouldNoLongerExistInTheNetwork(String arg0) {
-        assertNull(StationManager.findLocationByName(arg0));
+        assertNull(StationManager.getInstance().findLocationByName(arg0));
     }
 }

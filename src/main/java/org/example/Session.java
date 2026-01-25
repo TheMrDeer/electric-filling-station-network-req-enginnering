@@ -29,14 +29,14 @@ public class Session {
     public void startSession() {
         this.startTime = LocalDateTime.now();
         isSessionActive = true;
-        StationManager.setStationState(stationId, StationState.Occupied);
+        StationManager.getInstance().setStationState(stationId, StationState.Occupied);
         
         // Fetch Snapshot Data
-        ChargingStation station = StationManager.getStationById(this.stationId);
+        ChargingStation station = StationManager.getInstance().getStationById(this.stationId);
         if (station != null) {
             this.stationType = station.getType();
             
-            Location location = StationManager.getLocations().stream()
+            Location location = StationManager.getInstance().getLocations().stream()
                     .filter(l -> l.getLocationId().equals(station.getLocationId()))
                     .findFirst()
                     .orElse(null);
@@ -63,7 +63,7 @@ public class Session {
             this.endTime = LocalDateTime.now(); // Fallback if startSession wasn't called properly
         }
         isSessionActive = false;
-        StationManager.setStationState(stationId, StationState.inOperationFree);
+        StationManager.getInstance().setStationState(stationId, StationState.inOperationFree);
         this.customer.updateBalance(calculateCost());
     }
 

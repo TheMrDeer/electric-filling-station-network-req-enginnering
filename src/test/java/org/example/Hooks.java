@@ -6,7 +6,7 @@ public class Hooks {
 
     @Before
     public void resetSystem() {
-        StationManager.clearAll();
+        StationManager.getInstance().clearAll();
         UserManager.clearUsers();
         System.out.println("System initialized/reset for test scenario.");
     }

@@ -21,7 +21,7 @@ public class NetworkInformationSteps {
 
     @When("I request the list of all Locations in the Charging Network")
     public void iRequestTheListOfAllLocationsInTheChargingNetwork() {
-        searchResults = StationManager.getLocations();
+        searchResults = StationManager.getInstance().getLocations();
     }
 
     @Then("I should see {string} in the results")
@@ -33,7 +33,7 @@ public class NetworkInformationSteps {
 
     @And("I should see the Price Configuration for {string} with {double} for {string} and {double} for {string}")
     public void iShouldSeeThePriceConfigurationForWithForAndFor(String locationName, double price1, String type1, double price2, String type2) {
-        Location location = StationManager.findLocationByName(locationName);
+        Location location = StationManager.getInstance().findLocationByName(locationName);
         assertNotNull(location, "Location not found");
 
         checkPriceForType(location, type1, price1);
@@ -50,14 +50,14 @@ public class NetworkInformationSteps {
 
     @And("I should see the State of Charging Station {string} as {string}")
     public void iShouldSeeTheStateOfChargingStationAs(String stationId, String stateStr) {
-        ChargingStation station = StationManager.getStationById(stationId);
+        ChargingStation station = StationManager.getInstance().getStationById(stationId);
         assertNotNull(station, "Station " + stationId + " not found");
         assertEquals(StationState.fromLabel(stateStr), station.getState());
     }
 
     @When("I search for the Location {string}")
     public void iSearchForTheLocation(String locationName) {
-        locationDetails = StationManager.findLocationByName(locationName);
+        locationDetails = StationManager.getInstance().findLocationByName(locationName);
     }
 
     @Then("I should receive the details for {string}")
@@ -73,7 +73,7 @@ public class NetworkInformationSteps {
 
     @Given("the network has the following stations at {string}:")
     public void theNetworkHasTheFollowingStationsAt(String locationName, DataTable table) {
-        Location location = StationManager.findLocationByName(locationName);
+        Location location = StationManager.getInstance().findLocationByName(locationName);
         if (location == null) {
             location = new Location("LOC-" + locationName.hashCode(), locationName, "Address", Status.Active);
         }

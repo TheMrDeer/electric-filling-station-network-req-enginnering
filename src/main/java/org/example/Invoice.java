@@ -62,7 +62,6 @@ public class Invoice {
         return status;
     }
 
-    // Setter für Status (z. B. PAID, CANCELLED)
     public void setStatus(String status) {
         this.status = status;
     }

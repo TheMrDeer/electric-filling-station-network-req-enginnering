@@ -31,12 +31,15 @@ public class ChargingSteps {
 
 
         for (Map<String, String> row : rows) {
+            double pricePerMin = Double.parseDouble(row.get("PricePerMin"));
+            double pricePerKwh = row.containsKey("PricePerKwh") ? Double.parseDouble(row.get("PricePerKwh")) : 0.0;
+
             ChargingStation station = new ChargingStation(
                     row.get("StationID"),
                     StationState.fromLabel(row.get("State")),
                     location.getLocationId(),
                     ChargingStationType.valueOf(row.get("Type")),
-                    new Price(Double.parseDouble(row.get("PricePerMin")))
+                    new Price(pricePerMin, pricePerKwh)
             );
             station.addChargingStation();
             stationsById.put(station.getStationID(), station);
@@ -109,6 +112,11 @@ public class ChargingSteps {
     @And("the session has been running for {int} minutes")
     public void theSessionHasBeenRunningForMinutes(int arg0) {
         session.setDuration(arg0);
+    }
+
+    @And("the session charged {double} kWh")
+    public void theSessionChargedKWh(double kwh) {
+        session.setChargedEnergy(kwh);
     }
 
     @When("I end the charging session")

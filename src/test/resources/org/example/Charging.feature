@@ -4,10 +4,10 @@ Feature: Charging
   Background:
     Given the E.Power system is initialized
     And a location "Vienna Central" exists with the following stations:
-      | StationID | Type | State             | PricePerMin |
-      | CS-101    | AC   | in operation free | 0.30        |
-      | CS-102    | DC   | occupied          | 0.50        |
-      | CS-103    | DC   | in operation free | 0.50        |
+      | StationID | Type | State             | PricePerMin | PricePerKwh |
+      | CS-101    | AC   | in operation free | 0.30        | 0.20        |
+      | CS-102    | DC   | occupied          | 0.50        | 0.40        |
+      | CS-103    | DC   | in operation free | 0.50        | 0.40        |
     And a customer "User123" exists with a balance of 50.00
 
   Scenario: Show overview of charging stations (Story #48)
@@ -26,7 +26,8 @@ Feature: Charging
   Scenario: End charging session (Story #50)
     Given I have an active charging session at "CS-103"
     And the session has been running for 30 minutes
+    And the session charged 20.0 kWh
     When I end the charging session
     Then _the station "CS-103" state should change to "in operation free"
-    And the cost of 15.00 should be deducted from my balance
-    And my new balance should be 35.00
+    And the cost of 23.00 should be deducted from my balance
+    And my new balance should be 27.00

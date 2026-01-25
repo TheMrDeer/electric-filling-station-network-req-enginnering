@@ -5,23 +5,14 @@ import java.util.Date;
 public class Price {
 
     private String priceId;
-
-    public double getRatePerMinute() {
-        return ratePerMinute;
-    }
-
-    public double getRatePerKwh() {
-        return ratePerKwh;
-    }
-
     private double ratePerMinute;
     private double ratePerKwh;
     private Date validFrom;
     private Date validTo;
 
+    public Price() {
+    }
 
-    public Price(){};
-    
     public Price(double ratePerMinute) {
         setPrice(ratePerMinute);
     }
@@ -52,5 +43,13 @@ public class Price {
     public void setPrice(double ratePerMinute, double ratePerKwh) {
         this.ratePerMinute = ratePerMinute;
         this.ratePerKwh = ratePerKwh;
+    }
+
+    public double getRatePerMinute() {
+        return ratePerMinute;
+    }
+
+    public double getRatePerKwh() {
+        return ratePerKwh;
     }
 }

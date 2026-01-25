@@ -25,7 +25,7 @@ Feature: Manage Charging Stations
 
   Scenario: Get information of charging stations by type and state (Story #41)
     Given the following stations exist at "Vienna Central":
-      | ID     | Type | State             |
+      | ID    | Type | State             |
       | CS-100 | AC   | in operation free |
       | CS-101 | AC   | occupied          |
       | CS-102 | DC   | in operation free |

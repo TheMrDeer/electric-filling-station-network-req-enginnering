@@ -1,7 +1,6 @@
 package org.example;
 
 import java.time.LocalDateTime;
-import java.time.Duration;
 
 public class Session {
 
@@ -14,22 +13,6 @@ public class Session {
     private String stationId;
     private boolean isSessionActive;
     private final Customer customer;
-
-    public void setDuration(long minutes) {
-        this.duration = minutes;
-    }
-    
-    public void setChargedEnergy(double kwh) {
-        this.chargedEnergy = kwh;
-    }
-
-    public double getChargedEnergy() {
-        return chargedEnergy;
-    }
-
-    public boolean isSessionActive() {
-        return isSessionActive;
-    }
 
     public Session(String sessionId, String stationId, Customer customer) {
         this.sessionId = sessionId;
@@ -46,7 +29,7 @@ public class Session {
     public void endSession() {
         this.endTime = this.startTime.plusMinutes(this.duration);
         isSessionActive = false;
-        StationManager.setStationState(stationId,StationState.inOperationFree);
+        StationManager.setStationState(stationId, StationState.inOperationFree);
         this.customer.updateBalance(calculateCost());
     }
 
@@ -56,6 +39,22 @@ public class Session {
         double ratePerKwh = station.getPrice().getRatePerKwh();
         this.totalCost = (duration * ratePerMinute) + (chargedEnergy * ratePerKwh);
         return totalCost;
+    }
+
+    public void setDuration(long minutes) {
+        this.duration = minutes;
+    }
+
+    public void setChargedEnergy(double kwh) {
+        this.chargedEnergy = kwh;
+    }
+
+    public double getChargedEnergy() {
+        return chargedEnergy;
+    }
+
+    public boolean isSessionActive() {
+        return isSessionActive;
     }
 
     public String getSessionId() {

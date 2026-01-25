@@ -1,6 +1,6 @@
 Feature: Receive Invoice
   As a Customer, I want to receive a transparent invoice after using the service.
-# Noch einmal ansehen was in der REchnung beeinhaltet ist
+# Noch einmal ansehen was in der Rechnung beeinhaltet ist
   Background:
     Given a finished charging session exists for customer "User123"
     And the session details are:

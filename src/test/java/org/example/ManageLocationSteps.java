@@ -29,9 +29,14 @@ public class ManageLocationSteps {
         System.out.println("Location listed: " + locationName);
     }
 
+    @Given("a location named {string} exists")
+    public void aLocationNamedExists(String locationName) {
+        location2 = new Location("LOC-2",locationName,"",Status.Active);
+    }
+
     @Given("a location named {string} exists in the network")
     public void aLocationNamedExistsInTheNetwork(String locationName) {
-        location2 = new Location("LOC-2",locationName,"",Status.Active);
+        location2 = new Location("LOC-3",locationName,"",Status.Active);
     }
 
     @When("I remove the location {string}")

@@ -45,8 +45,9 @@ public class Invoice {
         sb.append("Customer: ").append(customer.getUserId()).append("\n");
         sb.append("Date: ").append(date).append("\n");
         sb.append("--------------------------------------------------------------------------------------------------------\n");
-        sb.append(String.format("%-5s | %-20s | %-20s | %-10s | %-5s | %-10s | %-10s | %-10s\n", 
-                "#", "Date", "Location", "Station", "Type", "Duration", "kWh", "Price"));
+        // Updated columns as requested: Item # | Location | Station ID | Type | Duration | Energy (kWh) | Price
+        sb.append(String.format("%-6s | %-20s | %-15s | %-5s | %-10s | %-12s | %-10s\n", 
+                "Item #", "Location", "Station ID", "Type", "Duration", "Energy (kWh)", "Price"));
         sb.append("--------------------------------------------------------------------------------------------------------\n");
         
         // Sort sessions by start time
@@ -54,12 +55,8 @@ public class Invoice {
         
         int count = 1;
         for (Session s : sessions) {
-             String dateStr = s.getStartTime() != null ? 
-                     s.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : "N/A";
-             
-             sb.append(String.format("%-5d | %-20s | %-20s | %-10s | %-5s | %-10d | %-10.2f | %-10.2f\n",
+             sb.append(String.format("%-6d | %-20s | %-15s | %-5s | %-10d | %-12.2f | %-10.2f\n",
                      count++, 
-                     dateStr,
                      s.getLocationName() != null ? s.getLocationName() : "Unknown",
                      s.getStationId(),
                      s.getStationType() != null ? s.getStationType() : "N/A",

@@ -8,10 +8,10 @@ import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ReceiveInvoicesSteps {
 
@@ -27,10 +27,7 @@ public class ReceiveInvoicesSteps {
 
     @Given("a customer {string} exists with balance {double}")
     public void aCustomerExistsWithBalance(String customerId, double balance) {
-        // Create customer (User logic might require unique email, using ID as email for simplicity)
         customer = new Customer(customerId, customerId, customerId + "@example.com", "password");
-        // Reset balance if needed, or just assume 0.0 initially and top up if balance > 0
-        // Customer starts with 0.0. If balance > 0, we recharge.
         if (balance > 0) {
             customer.rechargeAccount(balance);
         }
@@ -48,19 +45,16 @@ public class ReceiveInvoicesSteps {
         
         for (Map<String, String> row : rows) {
             String locName = row.get("Location");
+            String stationId = row.get("Station ID");
             String typeStr = row.get("Type");
             String dateStr = row.get("Date");
             long duration = Long.parseLong(row.get("Duration"));
             double kwh = Double.parseDouble(row.get("kWh"));
-            double expectedCost = Double.parseDouble(row.get("Cost"));
-
+            
             // 1. Setup Location and Station
             Location location = StationManager.findLocationByName(locName);
             if (location == null) {
                 location = new Location("LOC-" + locName.hashCode(), locName, "Address", Status.Active);
-                // Set a price that matches the expected cost roughly, or just generic
-                // To match 5.00 for 30min/10kWh: 0.10/min (3.00) + 0.20/kWh (2.00) = 5.00
-                // To match 15.00 for 15min/20kWh: 0.20/min (3.00) + 0.60/kWh (12.00) = 15.00
                 
                 if (typeStr.equals("AC")) {
                     location.addPrice(new Price(location.getLocationId(), ChargingStationType.AC, 0.10, 0.20, LocalDateTime.MIN, null));
@@ -70,9 +64,11 @@ public class ReceiveInvoicesSteps {
             }
             
             ChargingStationType type = ChargingStationType.valueOf(typeStr);
-            String stationId = "CS-" + typeStr + "-" + System.nanoTime();
-            // Fixed constructor call: (id, state, locationId, type, price)
-            // Fixed enum usage: StationState.inOperationFree instead of Available/Free
+            // Use provided stationId if available, otherwise generate
+            if (stationId == null || stationId.isEmpty()) {
+                stationId = "CS-" + typeStr + "-" + System.nanoTime();
+            }
+            
             ChargingStation station = new ChargingStation(stationId, StationState.inOperationFree, location.getLocationId(), type, null);
             location.addChargingStationToLocation(station);
             StationManager.addStation(station);
@@ -80,15 +76,12 @@ public class ReceiveInvoicesSteps {
             // 2. Create and Run Session
             Session session = new Session("S-" + System.nanoTime(), stationId, customer);
             
-            // Set time BEFORE startSession so if we used it it would be correct, 
-            // but startSession uses 'now()'. We need to override it.
             session.startSession(); 
-            // Override start time to match test data
             session.setStartTime(LocalDateTime.parse(dateStr));
             
             session.setDuration(duration);
             session.setChargedEnergy(kwh);
-            session.endSession(); // Calculates cost based on prices
+            session.endSession(); 
             
             sessions.add(session);
         }
@@ -96,7 +89,9 @@ public class ReceiveInvoicesSteps {
 
     @When("I request the invoice")
     public void iRequestTheInvoice() {
-        Invoice invoice = new Invoice("INV-001", customer);
+        // Generate a unique ID for the invoice
+        String invoiceId = "INV-" + UUID.randomUUID().toString().substring(0, 8);
+        Invoice invoice = new Invoice(invoiceId, customer);
         for (Session s : sessions) {
             invoice.addSession(s);
         }
@@ -108,13 +103,6 @@ public class ReceiveInvoicesSteps {
 
     @Then("the invoice should list {int} charging sessions sorted by date")
     public void theInvoiceShouldListChargingSessionsSortedByDate(int count) {
-        // Count occurrences of session lines (heuristic: lines starting with a number)
-        // Or just check if all session IDs or Locations are present.
-        // We'll check if the output contains the expected number of lines in the table.
-        // This is a bit loose, but sufficient.
-        // Better: check if the sessions appear in the correct order.
-        
-        // Check sorting
         int firstIndex = invoiceOutput.indexOf("Vienna Central");
         int secondIndex = invoiceOutput.indexOf("Graz Main");
         Assertions.assertTrue(firstIndex < secondIndex, "Sessions should be sorted by date (Vienna before Graz)");
@@ -127,9 +115,6 @@ public class ReceiveInvoicesSteps {
 
     @Then("the first entry should contain {string}, {string}, and {string}")
     public void theFirstEntryShouldContainAnd(String loc, String type, String cost) {
-        // Find the line for the first session (Vienna)
-        // We expect "Vienna Central" ... "AC" ... "5.00"
-        // We can check if these substrings exist in the output.
         Assertions.assertTrue(invoiceOutput.contains(loc));
         Assertions.assertTrue(invoiceOutput.contains(type));
         
@@ -141,12 +126,27 @@ public class ReceiveInvoicesSteps {
         } catch (NumberFormatException e) {
             Assertions.assertTrue(invoiceOutput.contains(cost));
         }
-        System.out.println("Invoice entry verified: " + loc + ", " + type + ", " + cost);
     }
 
     @Then("the invoice should show the current remaining balance")
     public void theInvoiceShouldShowTheCurrentRemainingBalance() {
         double balance = customer.checkBalance();
         Assertions.assertTrue(invoiceOutput.contains(String.format("Outstanding Balance: %.2f", balance)));
+    }
+
+    @Then("the invoice should contain the Invoice Item Number {string}")
+    public void theInvoiceShouldContainTheInvoiceItemNumber(String itemNumber) {
+        // Check for the item number in the table (e.g., "1      |")
+        Assertions.assertTrue(invoiceOutput.contains(itemNumber + " "), "Invoice should contain item number " + itemNumber);
+    }
+
+    @Then("the invoice should contain the Charging Station ID {string}")
+    public void theInvoiceShouldContainTheChargingStationID(String stationId) {
+        Assertions.assertTrue(invoiceOutput.contains(stationId), "Invoice should contain Station ID " + stationId);
+    }
+
+    @Then("the invoice should have a unique Invoice ID")
+    public void theInvoiceShouldHaveAUniqueInvoiceID() {
+        Assertions.assertTrue(invoiceOutput.contains("Invoice ID: INV-"), "Invoice should have a generated Invoice ID");
     }
 }

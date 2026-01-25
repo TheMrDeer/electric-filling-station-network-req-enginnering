@@ -1,15 +1,28 @@
 package org.example;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Price {
 
-    private String priceId;
-    private double ratePerMinute;
-    private double ratePerKwh;
-    private Date validFrom;
-    private Date validTo;
+    private String locationId;
+    private ChargingStationType type;
+    private double pricePerMinute;
+    private double pricePerKwh;
+    private LocalDateTime validFrom;
+    private LocalDateTime validTo;
 
+    // New Constructor for Temporal Tariff
+    public Price(String locationId, ChargingStationType type, double pricePerMinute, double pricePerKwh, LocalDateTime validFrom, LocalDateTime validTo) {
+        this.locationId = locationId;
+        this.type = type;
+        this.pricePerMinute = pricePerMinute;
+        this.pricePerKwh = pricePerKwh;
+        this.validFrom = validFrom;
+        this.validTo = validTo;
+    }
+
+    // Compatibility Constructors
     public Price() {
     }
 
@@ -21,35 +34,51 @@ public class Price {
         setPrice(ratePerMinute, ratePerKwh);
     }
 
-    public Price(String priceId, double ratePerMinute, Date validFrom, Date validTo) {
-        this.priceId = priceId;
-        setPrice(ratePerMinute);
-        this.validFrom = validFrom;
-        this.validTo = validTo;
-    }
-
-    public Price(String priceId, double ratePerMinute, double ratePerKwh, Date validFrom, Date validTo) {
-        this.priceId = priceId;
-        setPrice(ratePerMinute, ratePerKwh);
-        this.validFrom = validFrom;
-        this.validTo = validTo;
-    }
-
+    // Compatibility Methods
     public void setPrice(double ratePerMinute) {
-        this.ratePerMinute = ratePerMinute;
-        this.ratePerKwh = 0.0;
+        this.pricePerMinute = ratePerMinute;
+        this.pricePerKwh = 0.0;
     }
 
     public void setPrice(double ratePerMinute, double ratePerKwh) {
-        this.ratePerMinute = ratePerMinute;
-        this.ratePerKwh = ratePerKwh;
+        this.pricePerMinute = ratePerMinute;
+        this.pricePerKwh = ratePerKwh;
     }
 
     public double getRatePerMinute() {
-        return ratePerMinute;
+        return pricePerMinute;
     }
 
     public double getRatePerKwh() {
-        return ratePerKwh;
+        return pricePerKwh;
+    }
+
+    // New Getters
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public ChargingStationType getType() {
+        return type;
+    }
+
+    public double getPricePerMinute() {
+        return pricePerMinute;
+    }
+
+    public double getPricePerKwh() {
+        return pricePerKwh;
+    }
+
+    public LocalDateTime getValidFrom() {
+        return validFrom;
+    }
+
+    public LocalDateTime getValidTo() {
+        return validTo;
+    }
+
+    public void setValidTo(LocalDateTime validTo) {
+        this.validTo = validTo;
     }
 }

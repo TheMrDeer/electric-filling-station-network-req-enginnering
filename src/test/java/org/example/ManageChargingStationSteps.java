@@ -41,6 +41,7 @@ public class ManageChargingStationSteps {
 
         Assertions.assertEquals(location.getLocationId(), station.getLocationId(),
                 "Station should be associated with the correct location ID");
+        System.out.println("Station " + stationId + " associated with " + locationName);
     }
 
     @Given("a station {string} exists at {string}")

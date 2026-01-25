@@ -109,6 +109,7 @@ public class ChargingSteps {
     @Then("the session should start successfully")
     public void theSessionShouldStartSuccessfully() {
         assertTrue(session.isSessionActive());
+        System.out.println("Session started successfully.");
     }
 
     @And("the station {string} state should change to {string}")

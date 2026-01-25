@@ -1,18 +1,15 @@
 Feature: Receive Invoice
   As a Customer, I want to receive a transparent invoice after using the service.
-# Noch einmal ansehen was in der REchnung beeinhaltet ist
-  Background:
-    Given a finished charging session exists for customer "User123"
-    And the session details are:
-      | Station   | Vienna Central - CS-103 |
-      | Duration  | 30 min                  |
-      | Price     | 0.50 per min            |
-      | Total     | 15.00                   |
 
-  Scenario: Generate invoice (Story #51)
-    When I request the invoice for the last session
-    Then a new invoice should be generated
-    And the invoice should contain the location "Vienna Central"
-    And the invoice should list "30 min" duration
-    And the final amount on the invoice should be 15.00
-    And the charging station type is ..
+  Scenario: Generate detailed invoice with multiple sessions and top-ups
+    Given a customer "User123" exists with balance 0.00
+    And the customer tops up 100.00
+    And the customer has the following finished sessions:
+      | Location       | Type | Date             | Duration | kWh  | Cost  |
+      | Vienna Central | AC   | 2023-01-01T10:00 | 30       | 10.0 | 5.00  |
+      | Graz Main      | DC   | 2023-01-02T14:00 | 15       | 20.0 | 15.00 |
+    When I request the invoice
+    Then the invoice should list 2 charging sessions sorted by date
+    And the invoice should list the Top-Up of 100.00
+    And the first entry should contain "Vienna Central", "AC", and "5.00"
+    And the invoice should show the current remaining balance

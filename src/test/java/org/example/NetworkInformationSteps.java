@@ -28,6 +28,7 @@ public class NetworkInformationSteps {
     public void iShouldSeeInTheResults(String locationName) {
         boolean found = searchResults.stream().anyMatch(l -> l.getName().equals(locationName));
         assertTrue(found, "Location " + locationName + " not found in results");
+        System.out.println("Location found in results: " + locationName);
     }
 
     @And("I should see the Price Configuration for {string} with {double} for {string} and {double} for {string}")

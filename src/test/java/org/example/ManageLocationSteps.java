@@ -26,6 +26,7 @@ public class ManageLocationSteps {
             }
         }
         assertTrue(isListed);
+        System.out.println("Location listed: " + locationName);
     }
 
     @Given("a location named {string} exists in the network")

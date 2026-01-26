@@ -2,7 +2,7 @@ Feature: Manage Charging Stations
   As the Owner, I want to configure the technical facilities.
 
   Background:
-    Given a location named "Vienna Central" exists
+    Given a location named "Vienna Central" exists at "Landstraßer Hauptstraße 1" with a default price of 0.30
 
   Scenario: Add charging stations to location (Story #9)
     When I add a charging station with ID "CS-001" to "Vienna Central"

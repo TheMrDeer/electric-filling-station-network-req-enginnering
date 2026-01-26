@@ -56,6 +56,11 @@ public class StationManager {
     }
 
     public void removeLocation(Location location) {
+        boolean hasStations = chargingStations.stream()
+                .anyMatch(s -> s.getLocationId().equals(location.getLocationId()));
+        if (hasStations) {
+            throw new IllegalStateException("Cannot delete location with assigned stations");
+        }
         locations.remove(location);
     }
 

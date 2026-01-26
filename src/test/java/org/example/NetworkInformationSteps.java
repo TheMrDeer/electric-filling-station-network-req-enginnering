@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NetworkInformationSteps {
@@ -92,5 +93,10 @@ public class NetworkInformationSteps {
             ChargingStation station = new ChargingStation(id, state, location.getLocationId(), type, dummyPrice);
             station.addChargingStation();
         }
+    }
+
+    @Then("I should be informed that {string} does not exist")
+    public void iShouldBeInformedThatDoesNotExist(String locationName) {
+        assertNull(locationDetails, "Expected location to be null, but found: " + locationDetails);
     }
 }

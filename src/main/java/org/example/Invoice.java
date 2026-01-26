@@ -16,6 +16,9 @@ public class Invoice {
     private String status;
 
     public Invoice(String invoiceId, Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer cannot be null");
+        }
         this.invoiceId = invoiceId;
         this.customer = customer;
         this.sessions = new ArrayList<>();
@@ -55,12 +58,12 @@ public class Invoice {
         
         int count = 1;
         for (Session s : sessions) {
-             sb.append(String.format("%-6d | %-20s | %-15s | %-5s | %-10d | %-12.2f | %-10.2f\n",
+             sb.append(String.format("%-6d | %-20s | %-15s | %-5s | %-10s | %-12.2f | %-10.2f\n",
                      count++, 
                      s.getLocationName() != null ? s.getLocationName() : "Unknown",
                      s.getStationId(),
                      s.getStationType() != null ? s.getStationType() : "N/A",
-                     (long)s.getDuration(),
+                     (long)s.getDuration() + " min",
                      s.getChargedEnergy(),
                      s.getTotalCost()));
         }

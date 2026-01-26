@@ -13,3 +13,8 @@ Feature: Manage Balance
     Given a customer "User124" exists with a balance of 10.00
     When I top up the balance by 50.00
     Then the new balance for "User124" should be 60.00
+
+  Scenario: Prevent negative top-up (Error Case)
+    Given a customer "User124" exists with a balance of 10.00
+    When I attempt to top up the balance by -20.00
+    Then I should receive a balance error message "Amount must be positive"

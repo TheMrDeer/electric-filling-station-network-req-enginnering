@@ -22,6 +22,7 @@ public class ChargingSteps {
     private String currentStationId;
     private Session session;
     private Location location;
+    private String lastError;
 
     @Before
     public void setUp() {
@@ -153,6 +154,21 @@ public class ChargingSteps {
     @And("my new balance should be {double}")
     public void myNewBalanceShouldBe(double arg0) {
         assertEquals(arg0, getCurrentCustomer().checkBalance());
+    }
+
+    @When("I attempt to start a charging session")
+    public void iAttemptToStartAChargingSession() {
+        try {
+            session = new Session("SESSION-1", currentStationId, getCurrentCustomer());
+            session.startSession();
+        } catch (IllegalStateException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive a session error message {string}")
+    public void iShouldReceiveASessionErrorMessage(String expectedMessage) {
+        assertEquals(expectedMessage, lastError);
     }
 
     private Customer getCurrentCustomer() {

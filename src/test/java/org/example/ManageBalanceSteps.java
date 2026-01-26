@@ -11,14 +11,17 @@ public class ManageBalanceSteps {
 
     private Customer customer;
     private double balance;
+    private String lastError;
 
     @Given("a customer {string} exists with a balance of {double}")
     public void _aCustomerExistsWithABalanceOf(String customerId, double amount) {
         customer = UserManager.getCustomerById(customerId);
         if (customer == null) {
-            customer = new Customer(customerId, "", "", "");
+            customer = new Customer(customerId, customerId, customerId + "@example.com", "password");
         } else {
+            // Reset balance if user exists or recreate
             UserManager.removeUser(customer);
+            customer = new Customer(customerId, customerId, customerId + "@example.com", "password");
         }
         UserManager.addUser(customer);
         if (amount > 0) {
@@ -46,5 +49,23 @@ public class ManageBalanceSteps {
     @Then("the new balance for {string} should be {double}")
     public void theNewBalanceForShouldBe(String customerId, double balance) {
         assertEquals(balance, UserManager.getCustomerById(customerId).checkBalance());
+    }
+
+    @When("I attempt to top up the balance by {double}")
+    public void iAttemptToTopUpTheBalanceBy(double amount) {
+        try {
+            // Assuming the user is "User124" based on the scenario context or TestContext
+            // The scenario says: Given a customer "User124"...
+            // So we can use "User124" or TestContext.currentCustomerId
+            String id = TestContext.currentCustomerId != null ? TestContext.currentCustomerId : "User124";
+            UserManager.getCustomerById(id).rechargeAccount(amount);
+        } catch (IllegalArgumentException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive a balance error message {string}")
+    public void iShouldReceiveABalanceErrorMessage(String expectedMessage) {
+        assertEquals(expectedMessage, lastError);
     }
 }

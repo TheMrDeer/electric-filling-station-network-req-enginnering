@@ -19,3 +19,8 @@ Feature: Configure Location Prices
       | AC   | 0.15        | 0.40        |
     Then the price for "AC" at "Vienna Central" on "2023-01-15T12:00" should be 0.10 per minute and 0.35 per kWh
     And the price for "AC" at "Vienna Central" on "2023-02-02T12:00" should be 0.15 per minute and 0.40 per kWh
+
+  Scenario: Prevent setting negative prices (Error Case)
+    Given a location named "Vienna Central" exists
+    When I try to set the price for "AC" at "Vienna Central" to -0.50
+    Then I should receive a configuration error message "Price cannot be negative"

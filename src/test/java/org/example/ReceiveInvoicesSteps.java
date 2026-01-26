@@ -19,6 +19,7 @@ public class ReceiveInvoicesSteps {
     private List<Session> sessions = new ArrayList<>();
     private List<Double> topUps = new ArrayList<>();
     private String invoiceOutput;
+    private String lastError;
 
     @Before
     public void cleanup() {
@@ -148,5 +149,60 @@ public class ReceiveInvoicesSteps {
     @Then("the invoice should have a unique Invoice ID")
     public void theInvoiceShouldHaveAUniqueInvoiceID() {
         Assertions.assertTrue(invoiceOutput.contains("Invoice ID: INV-"), "Invoice should have a generated Invoice ID");
+    }
+
+    @When("I attempt to add a session with start time {string} and end time {string}")
+    public void iAttemptToAddASessionWithStartTimeAndEndTime(String startStr, String endStr) {
+        try {
+            Session session = new Session("S-Error", "CS-Error", customer);
+            LocalDateTime start = LocalDateTime.parse(startStr);
+            LocalDateTime end = LocalDateTime.parse(endStr);
+            session.setStartTime(start);
+            session.setEndTime(end);
+        } catch (IllegalArgumentException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive a calculation error message {string}")
+    public void iShouldReceiveACalculationErrorMessage(String expectedMessage) {
+        Assertions.assertEquals(expectedMessage, lastError);
+    }
+
+    @When("I request the invoice for the last session")
+    public void iRequestTheInvoiceForTheLastSession() {
+        if (customer == null) {
+            customer = new Customer("User123", "User123", "user@example.com", "password");
+        }
+        iRequestTheInvoice();
+    }
+
+    @Then("a new invoice should be generated")
+    public void aNewInvoiceShouldBeGenerated() {
+        Assertions.assertNotNull(invoiceOutput);
+        Assertions.assertFalse(invoiceOutput.isEmpty());
+    }
+
+    @Then("the invoice should contain the location {string}")
+    public void theInvoiceShouldContainTheLocation(String location) {
+        Assertions.assertTrue(invoiceOutput.contains(location));
+    }
+
+    @Then("the invoice should list {string} duration")
+    public void theInvoiceShouldListDuration(String duration) {
+        // Duration format might vary, checking for presence
+        Assertions.assertTrue(invoiceOutput.contains(duration));
+    }
+
+    @Then("the final amount on the invoice should be {double}")
+    public void theFinalAmountOnTheInvoiceShouldBe(Double amount) {
+        Assertions.assertTrue(invoiceOutput.contains(String.format("%.2f", amount)));
+    }
+
+    @Then("the charging station type is ..")
+    public void theChargingStationTypeIs() {
+        // This step seems incomplete in the feature file or just a placeholder
+        // We can check if AC or DC is present
+        Assertions.assertTrue(invoiceOutput.contains("AC") || invoiceOutput.contains("DC"));
     }
 }

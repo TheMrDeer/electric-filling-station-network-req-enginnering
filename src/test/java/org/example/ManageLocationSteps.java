@@ -4,6 +4,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,6 +13,8 @@ public class ManageLocationSteps {
     private Location location;
     private Location location2;
     boolean isListed;
+    private String lastError;
+
     @When("I add a new location named {string}")
     public void iAddANewLocationNamed(String locationName) {
         location = new Location("LOC-1",locationName,"",Status.Active);
@@ -47,5 +50,19 @@ public class ManageLocationSteps {
     @Then("the location {string} should no longer exist in the network")
     public void theLocationShouldNoLongerExistInTheNetwork(String arg0) {
         assertNull(StationManager.getInstance().findLocationByName(arg0));
+    }
+
+    @When("I attempt to remove the location {string}")
+    public void iAttemptToRemoveTheLocation(String locationName) {
+        try {
+            StationManager.getInstance().removeLocation(StationManager.getInstance().findLocationByName(locationName));
+        } catch (IllegalStateException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive a location error message {string}")
+    public void iShouldReceiveALocationErrorMessage(String expectedMessage) {
+        assertEquals(expectedMessage, lastError);
     }
 }

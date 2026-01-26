@@ -1,6 +1,5 @@
 package org.example;
 
-import io.cucumber.java.PendingException;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -11,7 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserAuthenticationSteps {
 
     private Customer customer;
-    String errorMsg;
+    private String lastErrorMessage;
+    private String errorMsg;
+
+    @When("I register a new account with Customer Identity {string}")
+    public void iRegisterANewAccountWithCustomerIdentity(String arg0) {
+        customer = new Customer(arg0, arg0, arg0 + "@example.com", "password");
+        customer.addUser();
+    }
 
     @When("I register a new account with Customer Identity {string} and Email {string} and Password {string}")
     public void iRegisterANewAccountWithCustomerIdentityAndEmailAndPassword(String arg0, String arg1, String arg2) {
@@ -62,7 +68,25 @@ public class UserAuthenticationSteps {
         assertEquals("Password must have at least " + arg0 + " characters", errorMsg);
 
     }
+
+    @When("I attempt to register a new account with Customer Identity {string}")
+    public void iAttemptToRegisterANewAccountWithCustomerIdentity(String userId) {
+        try {
+            customer = new Customer(userId, userId, userId + "@example.com", "password");
+            customer.addUser();
+        } catch (IllegalStateException e) {
+            lastErrorMessage = e.getMessage();
+        }
+    }
+
+    @Then("I should receive a registration error message {string}")
+    public void iShouldReceiveARegistrationErrorMessage(String message) {
+        assertEquals(message, lastErrorMessage);
+    }
+
+    @Given("a customer {string} exists")
+    public void aCustomerExists(String customerId) {
+        customer = new Customer(customerId, customerId, customerId + "@example.com", "password");
+        UserManager.addUser(customer);
+    }
 }
-
-
-

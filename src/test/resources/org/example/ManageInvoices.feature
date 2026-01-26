@@ -13,3 +13,7 @@ Feature: Manage Invoices
     Then I should see 2 invoices in the list
     And the invoice "INV-001" should show a total amount of 15.00
     And the invoice "INV-002" should be associated with "User456"
+
+  Scenario: Handle invoice request for non-existent customer (Edge Case)
+    When I request an invoice for a non-existent customer "GhostUser"
+    Then I should receive an invoice error message "Customer not found"

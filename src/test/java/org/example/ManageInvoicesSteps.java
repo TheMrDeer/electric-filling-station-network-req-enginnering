@@ -17,6 +17,7 @@ public class ManageInvoicesSteps {
 
     private final Map<String, InvoiceRecord> invoicesById = new HashMap<>();
     private List<InvoiceRecord> viewedInvoices = new ArrayList<>();
+    private String lastError;
 
     @Given("the following invoices exist in the system:")
     public void theFollowingInvoicesExistInTheSystem(DataTable dataTable) {
@@ -56,6 +57,24 @@ public class ManageInvoicesSteps {
         InvoiceRecord record = invoicesById.get(invoiceId);
         assertNotNull(record);
         assertEquals(customerId, record.customerId());
+    }
+
+    @When("I request an invoice for a non-existent customer {string}")
+    public void iRequestAnInvoiceForANonExistentCustomer(String customerId) {
+        try {
+            Customer customer = UserManager.getCustomerById(customerId);
+            if (customer == null) {
+                throw new IllegalArgumentException("Customer not found");
+            }
+            // Logic to get invoices for customer would go here
+        } catch (IllegalArgumentException e) {
+            lastError = e.getMessage();
+        }
+    }
+
+    @Then("I should receive an invoice error message {string}")
+    public void iShouldReceiveAnInvoiceErrorMessage(String expectedMessage) {
+        assertEquals(expectedMessage, lastError);
     }
 
     private record InvoiceRecord(

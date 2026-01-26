@@ -22,7 +22,7 @@ public class ManageInvoicesSteps {
     @Given("the following invoices exist in the system:")
     public void theFollowingInvoicesExistInTheSystem(DataTable dataTable) {
         invoicesById.clear();
-        // Parsing the DataTable to populate the system with mock invoice records for testing.
+        // Populate system with mock invoice records
         for (Map<String, String> row : dataTable.asMaps(String.class, String.class)) {
             InvoiceRecord record = new InvoiceRecord(
                     row.get("InvoiceID"),
@@ -37,20 +37,20 @@ public class ManageInvoicesSteps {
 
     @When("I request a list of all invoices")
     public void iRequestAListOfAllInvoices() {
-        // Simulating the action of retrieving all invoices.
+        // Retrieve all invoices
         viewedInvoices = new ArrayList<>(invoicesById.values());
     }
 
     @Then("I should see {int} invoices in the list")
     public void iShouldSeeInvoicesInTheList(int expectedCount) {
-        // Verifying that the number of retrieved invoices matches the expected count.
+        // Verify retrieved invoice count
         assertEquals(expectedCount, viewedInvoices.size());
         System.out.println("Found " + viewedInvoices.size() + " invoices.");
     }
 
     @Then("the invoice {string} should show a total amount of {double}")
     public void theInvoiceShouldShowATotalAmountOf(String invoiceId, double expectedTotal) {
-        // Retrieving a specific invoice by ID to verify its total amount.
+        // Verify specific invoice total
         InvoiceRecord record = invoicesById.get(invoiceId);
         assertNotNull(record);
         assertEquals(expectedTotal, record.totalAmount());
@@ -58,7 +58,7 @@ public class ManageInvoicesSteps {
 
     @Then("the invoice {string} should be associated with {string}")
     public void theInvoiceShouldBeAssociatedWith(String invoiceId, String customerId) {
-        // Verifying that the invoice is linked to the correct customer.
+        // Verify invoice customer link
         InvoiceRecord record = invoicesById.get(invoiceId);
         assertNotNull(record);
         assertEquals(customerId, record.customerId());
@@ -67,25 +67,25 @@ public class ManageInvoicesSteps {
     @When("I request an invoice for a non-existent customer {string}")
     public void iRequestAnInvoiceForANonExistentCustomer(String customerId) {
         try {
-            // Simulating a request for a user that doesn't exist to test error handling.
+            // Simulate request for non-existent user
             Customer customer = UserManager.getCustomerById(customerId);
             if (customer == null) {
                 throw new IllegalArgumentException("Customer not found");
             }
             // Logic to get invoices for customer would go here
         } catch (IllegalArgumentException e) {
-            // Capturing the exception message for verification.
+            // Capture exception message
             lastError = e.getMessage();
         }
     }
 
     @Then("I should receive an invoice error message {string}")
     public void iShouldReceiveAnInvoiceErrorMessage(String expectedMessage) {
-        // Asserting that the correct error message was returned.
+        // Assert correct error message returned
         assertEquals(expectedMessage, lastError);
     }
 
-    // Using a Java Record to model immutable invoice data for the test context.
+    // Immutable invoice data record for testing
     private record InvoiceRecord(
             String invoiceId,
             String customerId,

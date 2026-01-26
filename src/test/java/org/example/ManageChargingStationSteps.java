@@ -19,16 +19,12 @@ public class ManageChargingStationSteps {
 
     @Given("a location named {string} exists at {string} with a default price of {double}")
     public void setupLocationWithPrice(String locationName, String address, double priceVal) {
-        // 1. Instantiate Location with the visible address
-        // Creating a location with specific details to serve as a container for stations.
         Location loc = new Location("LOC-" + locationName.hashCode(), locationName, address, Status.Active);
 
-        // 2. Instantiate Price with the visible amount
-        // Setting up a default price for AC charging to be used by stations in this location.
+        // 2. Instantiate Price with the  amount
         Price initialPrice = new Price(loc.getLocationId(), ChargingStationType.AC, priceVal, 0.0, LocalDateTime.MIN, null);
 
         // 3. Store them so they can be retrieved later
-        // Adding the price to the location and the location to the manager to persist state.
         loc.addPrice(initialPrice);
         StationManager.getInstance().addLocation(loc);
     }
@@ -39,17 +35,15 @@ public class ManageChargingStationSteps {
         Location location = StationManager.getInstance().findLocationByName(locationName);
 
         if (location == null) {
-            // Throwing exception if location is missing, which might be caught in "attempt" steps.
             throw new IllegalArgumentException("Location does not exist");
         }
 
         // 2. Retrieve the Price we created in the Background
-        // (This ensures we use the 0.30 defined in the feature file, not a hardcoded value)
-        // Fetching the active price to associate with the new station.
+
         Price activePrice = location.getPriceFor(ChargingStationType.AC, LocalDateTime.now());
 
         // 3. Create the Station using the retrieved objects
-        // Creating the station with the retrieved location ID and price.
+
         ChargingStation station = new ChargingStation(
                 stationId,
                 StationState.inOperationFree,
@@ -104,11 +98,8 @@ public class ManageChargingStationSteps {
 
     @Given("a station {string} exists")
     public void aStationExists(String stationId) {
-        StationManager.getInstance().removeStationById(stationId);
-        // We need a valid location for this to work with the new validation.
-        // Assuming "LOC-1" exists from Background or we create a dummy one.
-        // But this step is used in "Set charging station state" scenario which has "Background: Given a location named "Vienna Central" exists".
-        // So we can use "Vienna Central".
+
+
         // Finding a valid location to associate the station with, defaulting to "LOC-1" if not found.
         Location location = StationManager.getInstance().findLocationByName("Vienna Central");
         String locationId = (location != null) ? location.getLocationId() : "LOC-1";

@@ -17,13 +17,13 @@ public class ManageLocationSteps {
 
     @When("I add a new location named {string}")
     public void iAddANewLocationNamed(String locationName) {
-        // Creating a new location object to test the addition functionality.
+        // Create new location for testing
         location = new Location("LOC-1",locationName,"",Status.Active);
     }
 
     @Then("the location {string} should be listed in the Charging Network")
     public void theLocationShouldBeListedInTheChargingNetwork(String locationName) {
-        // Iterating through all locations to verify the new location is present.
+        // Verify location is listed
         for(Location l:StationManager.getInstance().getLocations()) {
             if (l.getName().equals(locationName)) {
                 isListed = true;
@@ -36,42 +36,42 @@ public class ManageLocationSteps {
 
     @Given("a location named {string} exists")
     public void aLocationNamedExists(String locationName) {
-        // Creating a location instance for test setup (variable name location2 implies secondary or specific use).
+        // Create location instance for test setup
         location2 = new Location("LOC-2",locationName,"",Status.Active);
     }
 
     @Given("a location named {string} exists in the network")
     public void aLocationNamedExistsInTheNetwork(String locationName) {
-        // Similar to above, but explicitly for "in the network" context, using a different ID.
+        // Create location explicitly for network context
         location2 = new Location("LOC-3",locationName,"",Status.Active);
     }
 
     @When("I remove the location {string}")
     public void iRemoveTheLocation(String locationName) {
-        // Finding and removing the location to test deletion logic.
+        // Find and remove location
         StationManager.getInstance().removeLocation(StationManager.getInstance().findLocationByName(locationName));
     }
 
     @Then("the location {string} should no longer exist in the network")
     public void theLocationShouldNoLongerExistInTheNetwork(String arg0) {
-        // Verifying that the location cannot be found after removal.
+        // Verify location removal
         assertNull(StationManager.getInstance().findLocationByName(arg0));
     }
 
     @When("I attempt to remove the location {string}")
     public void iAttemptToRemoveTheLocation(String locationName) {
         try {
-            // Attempting removal of a potentially non-existent location to test error handling.
+            // Attempt removal of non-existent location
             StationManager.getInstance().removeLocation(StationManager.getInstance().findLocationByName(locationName));
         } catch (IllegalStateException e) {
-            // Capturing the exception message for validation.
+            // Capture exception message
             lastError = e.getMessage();
         }
     }
 
     @Then("I should receive a location error message {string}")
     public void iShouldReceiveALocationErrorMessage(String expectedMessage) {
-        // Asserting the error message matches the expected output.
+        // Assert error message matches expected
         assertEquals(expectedMessage, lastError);
     }
 }

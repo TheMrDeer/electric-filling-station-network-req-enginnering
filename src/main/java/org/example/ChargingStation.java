@@ -58,5 +58,4 @@ public class ChargingStation {
         System.out.printf("StationID: %s, State: %s, Location: %s", this.stationID, this.state, this.locationId);
     }
 
-
 }

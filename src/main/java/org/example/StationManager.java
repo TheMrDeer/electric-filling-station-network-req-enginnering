@@ -5,19 +5,32 @@ import java.util.List;
 
 public class StationManager {
 
-    public static List<ChargingStation> getChargingStations() {
+    private static StationManager instance;
+
+    private List<ChargingStation> chargingStations;
+    private List<Location> locations;
+
+    private StationManager() {
+        chargingStations = new ArrayList<>();
+        locations = new ArrayList<>();
+    }
+
+    public static synchronized StationManager getInstance() {
+        if (instance == null) {
+            instance = new StationManager();
+        }
+        return instance;
+    }
+
+    public List<ChargingStation> getChargingStations() {
         return chargingStations;
     }
 
-    private static List<ChargingStation> chargingStations = new ArrayList<>();
-
-    public static List<Location> getLocations() {
+    public List<Location> getLocations() {
         return locations;
     }
 
-    private static List<Location> locations = new ArrayList<>();
-
-    public static void addStation(ChargingStation chargingStation) {
+    public void addStation(ChargingStation chargingStation) {
         if (getStationById(chargingStation.getStationID()) != null) {
             throw new IllegalArgumentException("Station ID already exists");
         }
@@ -30,28 +43,23 @@ public class StationManager {
         chargingStations.add(chargingStation);
     }
 
-    public static void removeStation(ChargingStation chargingStation) {
+    public void removeStation(ChargingStation chargingStation) {
         chargingStations.remove(chargingStation);
     }
 
-    public static void removeStationById(String stationId) {
+    public void removeStationById(String stationId) {
         chargingStations.removeIf(s -> s.getStationID().equals(stationId));
     }
 
-
-    /*public void setPrice(ChargingStation station, Price price) {
-
-    }*/
-
-    public static void addLocation(Location location) {
+    public void addLocation(Location location) {
         locations.add(location);
     }
 
-    public static void removeLocation(Location location) {
+    public void removeLocation(Location location) {
         locations.remove(location);
     }
 
-    public static void clearAll() {
+    public void clearAll() {
         chargingStations.clear();
         locations.clear();
     }
@@ -62,24 +70,25 @@ public class StationManager {
         }
     }
 
-    public static ChargingStation getStationById(String stationId) {
+    public ChargingStation getStationById(String stationId) {
         return chargingStations.stream()
                 .filter(s -> s.getStationID().equals(stationId))
                 .findFirst()
                 .orElse(null);
     }
 
-    public static Location findLocationByName(String name){
+    public Location findLocationByName(String name){
         return locations.stream()
                 .filter(l -> l.getName().equals(name))
                 .findFirst()
                 .orElse(null);
     }
 
-
-
-    public static void setStationState(String stationId, StationState newState) {
-        getStationById(stationId).setState(newState);
+    public void setStationState(String stationId, StationState newState) {
+        ChargingStation station = getStationById(stationId);
+        if (station != null) {
+            station.setState(newState);
+        }
     }
 
     public void printLocations() {

@@ -41,6 +41,7 @@ public class ManageInvoicesSteps {
     @Then("I should see {int} invoices in the list")
     public void iShouldSeeInvoicesInTheList(int expectedCount) {
         assertEquals(expectedCount, viewedInvoices.size());
+        System.out.println("Found " + viewedInvoices.size() + " invoices.");
     }
 
     @Then("the invoice {string} should show a total amount of {double}")

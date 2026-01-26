@@ -17,48 +17,67 @@ public class ManageChargingStationSteps {
 
     private String lastError;
 
+    // Helper Methods
+    private Location getOrCreateLocation(String locationName) {
+        Location location = StationManager.getInstance().findLocationByName(locationName);
+        if (location == null) {
+            location = new Location("LOC-" + locationName.hashCode(), locationName, "Unknown Address", Status.Active);
+            StationManager.getInstance().addLocation(location);
+        }
+        return location;
+    }
+
+    private void createAndAddStation(String stationId, String locationName, StationState state, ChargingStationType type) {
+        StationManager.getInstance().removeStationById(stationId);
+        Location location = getOrCreateLocation(locationName);
+        ChargingStation station = new ChargingStation(
+                stationId,
+                state,
+                location.getLocationId(),
+                type,
+                new Price()
+        );
+        StationManager.getInstance().addStation(station);
+    }
+
     @Given("a location named {string} exists at {string} with a default price of {double}")
     public void setupLocationWithPrice(String locationName, String address, double priceVal) {
         Location loc = new Location("LOC-" + locationName.hashCode(), locationName, address, Status.Active);
 
-        // 2. Instantiate Price with the  amount
+        // Associate a price object so future stations inherit this policy.
         Price initialPrice = new Price(loc.getLocationId(), ChargingStationType.AC, priceVal, 0.0, LocalDateTime.MIN, null);
 
-        // 3. Store them so they can be retrieved later
+        // Register the location to enable lookup by name in subsequent steps.
         loc.addPrice(initialPrice);
         StationManager.getInstance().addLocation(loc);
     }
 
     @When("I add a charging station with ID {string} to {string}")
     public void iAddAChargingStationWithIDTo(String stationId, String locationName) {
-        // 1. Retrieve the Location
+        // Retrieve the location first to ensure the station is linked to a valid parent.
         Location location = StationManager.getInstance().findLocationByName(locationName);
 
         if (location == null) {
             throw new IllegalArgumentException("Location does not exist");
         }
 
-        // 2. Retrieve the Price we created in the Background
-
+        // Fetch the active pricing configuration from the location settings.
         Price activePrice = location.getPriceFor(ChargingStationType.AC, LocalDateTime.now());
 
-        // 3. Create the Station using the retrieved objects
-
+        // Construct the full station object with dependencies to ensure a valid state.
         ChargingStation station = new ChargingStation(
                 stationId,
                 StationState.inOperationFree,
                 location.getLocationId(),
                 ChargingStationType.AC,
-                activePrice // <--- usage of retrieved price
+                activePrice 
         );
         StationManager.getInstance().addStation(station);
     }
 
     @Then("the station {string} should be associated with {string}")
     public void theStationShouldBeAssociatedWith(String stationId, String locationName) {
-        // We need to check against the location ID, but the test passes the name.
-        // However, since we now store the ID in the station, we should look up the location by name to get its ID for comparison.
-        // Resolving the location name to an ID to verify the foreign key relationship in the station.
+        // Resolve the location name to an ID to verify the relationship, as stations store the foreign key.
         Location location = StationManager.getInstance().findLocationByName(locationName);
         String expectedLocationId = (location != null) ? location.getLocationId() : locationName;
         assertEquals(expectedLocationId, StationManager.getInstance().getStationById(stationId).getLocationId());
@@ -66,41 +85,35 @@ public class ManageChargingStationSteps {
 
     @Given("a station {string} exists at {string}")
     public void aStationExistsAt(String stationId, String locationName) {
-        // Ensuring a clean state by removing any existing station with the same ID before creating a new one.
-        StationManager.getInstance().removeStationById(stationId);
-        Location location = StationManager.getInstance().findLocationByName(locationName);
-        String locationId = (location != null) ? location.getLocationId() : locationName;
-        StationManager.getInstance().addStation(new ChargingStation(stationId,StationState.inOperationFree,locationId,ChargingStationType.AC,new Price()));
+        createAndAddStation(stationId, locationName, StationState.inOperationFree, ChargingStationType.AC);
     }
 
     @When("I remove the charging station {string} from {string}")
     public void iRemoveTheChargingStationFrom(String stationId, String locationName) {
-        // Removing the station by ID. The location name is passed for context but not strictly needed for removal by ID.
+        // Use the unique ID for removal; the location name is for Gherkin readability only.
         StationManager.getInstance().removeStationById(stationId);
     }
 
     @Then("the station {string} should no longer exist at {string}")
     public void theStationShouldNoLongerExistAt(String stationId, String locationName) {
-        // Verifying the station is gone from the manager.
+        // Confirm removal by ensuring the station cannot be retrieved from the manager.
         assertNull(StationManager.getInstance().getStationById(stationId));
     }
     @When("I set the charging type of {string} to {string}")
     public void iSetTheChargingTypeOfTo(String stationId, String type) {
-        // Updating the station type to test modification logic.
+        // Simulate a configuration change to verify dynamic property updates.
         StationManager.getInstance().getStationById(stationId).setType(ChargingStationType.valueOf(type));
     }
 
     @Then("the station {string} should be identified as a {string} station")
     public void theStationShouldBeIdentifiedAsAStation(String stationId, String type) {
-        // Verifying the type update was successful.
+        // Verify that the modification was correctly persisted.
         assertEquals(ChargingStationType.valueOf(type),StationManager.getInstance().getStationById(stationId).getType());
     }
 
     @Given("a station {string} exists")
     public void aStationExists(String stationId) {
-
-
-        // Finding a valid location to associate the station with, defaulting to "LOC-1" if not found.
+        // Associate with a default or fallback location to ensure the station is valid.
         Location location = StationManager.getInstance().findLocationByName("Vienna Central");
         String locationId = (location != null) ? location.getLocationId() : "LOC-1";
 
@@ -115,39 +128,31 @@ public class ManageChargingStationSteps {
 
     @When("I set the state of {string} to {string}")
     public void iSetTheStateOfTo(String stationId, String state) {
-        // Updating the station state (e.g., to "Occupied" or "Broken").
+        // Simulate an operational state change to test status tracking.
         StationManager.getInstance().setStationState(stationId,StationState.fromLabel(state));
     }
 
     @Then("the station {string} status should be {string}")
     public void theStationStatusShouldBe(String stationId, String state) {
-        // Verifying the state update.
+        // Check that the system reflects the new state for accurate reporting.
         assertEquals(StationManager.getInstance().getStationById(stationId).getState(),StationState.fromLabel(state));
     }
 
     @Given("the following stations exist at {string}:")
     public void theFollowingStationsExistAt(String locationName, DataTable table) {
-        // Clearing previous state to ensure test isolation.
-        StationManager.getInstance().clearAll();
-        Location location = new Location("LOC-1", locationName, "", Status.Active);
-
+        // Ensure the parent location exists to prevent foreign key issues.
+        getOrCreateLocation(locationName);
 
         List<Map<String, String>> rows = table.asMaps(String.class, String.class);
 
-
+        // Iterate through the data table to efficiently bulk-create stations for complex scenarios.
         for (Map<String, String> row : rows) {
-            ChargingStation station = new ChargingStation(
+            createAndAddStation(
                     row.get("ID"),
+                    locationName,
                     StationState.fromLabel(row.get("State")),
-                    location.getLocationId(),
-                    ChargingStationType.valueOf(row.get("Type")),
-                    new Price()
+                    ChargingStationType.valueOf(row.get("Type"))
             );
-            // station.addChargingStation(); // This calls StationManager.addStation(this)
-            // Since we cleared all, there are no duplicates.
-            // And location exists.
-            // Adding multiple stations from the data table to the manager.
-            station.addChargingStation();
         }
     }
 
@@ -159,7 +164,7 @@ public class ManageChargingStationSteps {
 
         StationState requestedState = StationState.fromLabel(state);
 
-        // Using Java Streams to filter stations by both type and state.
+        // Filter the station list to isolate matches and verify search logic.
         chargingStationsByTypeAndState =
                 StationManager.getInstance().getChargingStations().stream()
                         .filter(cs -> cs.getType() == requestedType)
@@ -169,7 +174,7 @@ public class ManageChargingStationSteps {
 
     @Then("I should receive only station {string}")
     public void iShouldReceiveOnlyStation(String stationId) {
-        // Verifying that the filter returned exactly one result and it matches the expected ID.
+        // Verify the filter was precise enough to return the single expected item.
         assertEquals(1, chargingStationsByTypeAndState.size(),
                 "Expected exactly one matching station");
 
@@ -180,7 +185,7 @@ public class ManageChargingStationSteps {
     @When("I attempt to add a charging station with ID {string} to {string}")
     public void iAttemptToAddAChargingStationWithIDTo(String stationId, String locationName) {
         try {
-            // Wrapping the add action in a try-catch to test error scenarios (e.g., invalid location).
+            // Wrap in try-catch to capture the expected failure for verification.
             iAddAChargingStationWithIDTo(stationId, locationName);
         } catch (IllegalArgumentException e) {
             lastError = e.getMessage();
@@ -189,7 +194,7 @@ public class ManageChargingStationSteps {
 
     @Then("I should receive an error message {string}")
     public void iShouldReceiveAnErrorMessage(String expectedError) {
-        // Asserting the caught error message.
+        // Assert that the system provided the correct feedback for the failure.
         assertEquals(expectedError, lastError);
     }
 }

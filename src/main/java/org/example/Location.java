@@ -13,6 +13,7 @@ public class Location {
     private List<ChargingStation> chargingStations = new ArrayList<>();
     private List<Price> priceHistory = new ArrayList<>();
 
+    //create
     public Location(String locationId, String name, String address, Status status) {
         this.locationId = locationId;
         this.name = name;
@@ -69,5 +70,30 @@ public class Location {
             }
         }
         return null; // Or throw exception if no price found
+    }
+
+    //update
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setChargingStations(List<ChargingStation> chargingStations) {
+        this.chargingStations = chargingStations;
+    }
+
+    public void setPriceHistory(List<Price> priceHistory) {
+        this.priceHistory = priceHistory;
     }
 }

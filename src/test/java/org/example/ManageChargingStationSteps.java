@@ -20,12 +20,15 @@ public class ManageChargingStationSteps {
     @Given("a location named {string} exists at {string} with a default price of {double}")
     public void setupLocationWithPrice(String locationName, String address, double priceVal) {
         // 1. Instantiate Location with the visible address
+        // Creating a location with specific details to serve as a container for stations.
         Location loc = new Location("LOC-" + locationName.hashCode(), locationName, address, Status.Active);
 
         // 2. Instantiate Price with the visible amount
+        // Setting up a default price for AC charging to be used by stations in this location.
         Price initialPrice = new Price(loc.getLocationId(), ChargingStationType.AC, priceVal, 0.0, LocalDateTime.MIN, null);
 
         // 3. Store them so they can be retrieved later
+        // Adding the price to the location and the location to the manager to persist state.
         loc.addPrice(initialPrice);
         StationManager.getInstance().addLocation(loc);
     }
@@ -36,14 +39,17 @@ public class ManageChargingStationSteps {
         Location location = StationManager.getInstance().findLocationByName(locationName);
 
         if (location == null) {
+            // Throwing exception if location is missing, which might be caught in "attempt" steps.
             throw new IllegalArgumentException("Location does not exist");
         }
 
         // 2. Retrieve the Price we created in the Background
         // (This ensures we use the 0.30 defined in the feature file, not a hardcoded value)
+        // Fetching the active price to associate with the new station.
         Price activePrice = location.getPriceFor(ChargingStationType.AC, LocalDateTime.now());
 
         // 3. Create the Station using the retrieved objects
+        // Creating the station with the retrieved location ID and price.
         ChargingStation station = new ChargingStation(
                 stationId,
                 StationState.inOperationFree,
@@ -58,6 +64,7 @@ public class ManageChargingStationSteps {
     public void theStationShouldBeAssociatedWith(String stationId, String locationName) {
         // We need to check against the location ID, but the test passes the name.
         // However, since we now store the ID in the station, we should look up the location by name to get its ID for comparison.
+        // Resolving the location name to an ID to verify the foreign key relationship in the station.
         Location location = StationManager.getInstance().findLocationByName(locationName);
         String expectedLocationId = (location != null) ? location.getLocationId() : locationName;
         assertEquals(expectedLocationId, StationManager.getInstance().getStationById(stationId).getLocationId());
@@ -65,6 +72,7 @@ public class ManageChargingStationSteps {
 
     @Given("a station {string} exists at {string}")
     public void aStationExistsAt(String stationId, String locationName) {
+        // Ensuring a clean state by removing any existing station with the same ID before creating a new one.
         StationManager.getInstance().removeStationById(stationId);
         Location location = StationManager.getInstance().findLocationByName(locationName);
         String locationId = (location != null) ? location.getLocationId() : locationName;
@@ -73,20 +81,24 @@ public class ManageChargingStationSteps {
 
     @When("I remove the charging station {string} from {string}")
     public void iRemoveTheChargingStationFrom(String stationId, String locationName) {
+        // Removing the station by ID. The location name is passed for context but not strictly needed for removal by ID.
         StationManager.getInstance().removeStationById(stationId);
     }
 
     @Then("the station {string} should no longer exist at {string}")
     public void theStationShouldNoLongerExistAt(String stationId, String locationName) {
+        // Verifying the station is gone from the manager.
         assertNull(StationManager.getInstance().getStationById(stationId));
     }
     @When("I set the charging type of {string} to {string}")
     public void iSetTheChargingTypeOfTo(String stationId, String type) {
+        // Updating the station type to test modification logic.
         StationManager.getInstance().getStationById(stationId).setType(ChargingStationType.valueOf(type));
     }
 
     @Then("the station {string} should be identified as a {string} station")
     public void theStationShouldBeIdentifiedAsAStation(String stationId, String type) {
+        // Verifying the type update was successful.
         assertEquals(ChargingStationType.valueOf(type),StationManager.getInstance().getStationById(stationId).getType());
     }
 
@@ -97,6 +109,7 @@ public class ManageChargingStationSteps {
         // Assuming "LOC-1" exists from Background or we create a dummy one.
         // But this step is used in "Set charging station state" scenario which has "Background: Given a location named "Vienna Central" exists".
         // So we can use "Vienna Central".
+        // Finding a valid location to associate the station with, defaulting to "LOC-1" if not found.
         Location location = StationManager.getInstance().findLocationByName("Vienna Central");
         String locationId = (location != null) ? location.getLocationId() : "LOC-1";
 
@@ -111,16 +124,19 @@ public class ManageChargingStationSteps {
 
     @When("I set the state of {string} to {string}")
     public void iSetTheStateOfTo(String stationId, String state) {
+        // Updating the station state (e.g., to "Occupied" or "Broken").
         StationManager.getInstance().setStationState(stationId,StationState.fromLabel(state));
     }
 
     @Then("the station {string} status should be {string}")
     public void theStationStatusShouldBe(String stationId, String state) {
+        // Verifying the state update.
         assertEquals(StationManager.getInstance().getStationById(stationId).getState(),StationState.fromLabel(state));
     }
 
     @Given("the following stations exist at {string}:")
     public void theFollowingStationsExistAt(String locationName, DataTable table) {
+        // Clearing previous state to ensure test isolation.
         StationManager.getInstance().clearAll();
         Location location = new Location("LOC-1", locationName, "", Status.Active);
 
@@ -139,6 +155,7 @@ public class ManageChargingStationSteps {
             // station.addChargingStation(); // This calls StationManager.addStation(this)
             // Since we cleared all, there are no duplicates.
             // And location exists.
+            // Adding multiple stations from the data table to the manager.
             station.addChargingStation();
         }
     }
@@ -151,6 +168,7 @@ public class ManageChargingStationSteps {
 
         StationState requestedState = StationState.fromLabel(state);
 
+        // Using Java Streams to filter stations by both type and state.
         chargingStationsByTypeAndState =
                 StationManager.getInstance().getChargingStations().stream()
                         .filter(cs -> cs.getType() == requestedType)
@@ -160,6 +178,7 @@ public class ManageChargingStationSteps {
 
     @Then("I should receive only station {string}")
     public void iShouldReceiveOnlyStation(String stationId) {
+        // Verifying that the filter returned exactly one result and it matches the expected ID.
         assertEquals(1, chargingStationsByTypeAndState.size(),
                 "Expected exactly one matching station");
 
@@ -170,6 +189,7 @@ public class ManageChargingStationSteps {
     @When("I attempt to add a charging station with ID {string} to {string}")
     public void iAttemptToAddAChargingStationWithIDTo(String stationId, String locationName) {
         try {
+            // Wrapping the add action in a try-catch to test error scenarios (e.g., invalid location).
             iAddAChargingStationWithIDTo(stationId, locationName);
         } catch (IllegalArgumentException e) {
             lastError = e.getMessage();
@@ -178,6 +198,7 @@ public class ManageChargingStationSteps {
 
     @Then("I should receive an error message {string}")
     public void iShouldReceiveAnErrorMessage(String expectedError) {
+        // Asserting the caught error message.
         assertEquals(expectedError, lastError);
     }
 }

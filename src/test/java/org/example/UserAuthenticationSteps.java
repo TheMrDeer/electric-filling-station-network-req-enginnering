@@ -66,7 +66,6 @@ public class UserAuthenticationSteps {
     @Then("an error indicates that the password must have at least {int} characters")
     public void anErrorIndicatesThatThePasswordMustHaveAtLeastCharacters(int arg0) {
         assertEquals("Password must have at least " + arg0 + " characters", errorMsg);
-
     }
 
     @When("I attempt to register a new account with Customer Identity {string}")

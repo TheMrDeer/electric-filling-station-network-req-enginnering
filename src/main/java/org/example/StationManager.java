@@ -30,6 +30,85 @@ public class StationManager {
         return locations;
     }
 
+    // CRUD: Location (create)
+    public Location createLocation(String locationId, String name, String address, Status status) {
+        if (getLocationById(locationId) != null) {
+            throw new IllegalArgumentException("Location ID already exists");
+        }
+        Location location = new Location(locationId, name, address, status);
+        addLocation(location);
+        return location;
+    }
+
+    // CRUD: Location (read)
+    public Location getLocationById(String locationId) {
+        return locations.stream()
+                .filter(l -> l.getLocationId().equals(locationId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // CRUD: Location (update)
+    public void updateLocationName(String locationId, String newName) {
+        Location location = getLocationById(locationId);
+        if (location != null) {
+            location.setName(newName);
+        }
+    }
+
+    public void updateLocationAddress(String locationId, String newAddress) {
+        Location location = getLocationById(locationId);
+        if (location != null) {
+            location.setAddress(newAddress);
+        }
+    }
+
+    public void updateLocationStatus(String locationId, Status newStatus) {
+        Location location = getLocationById(locationId);
+        if (location != null) {
+            location.setStatus(newStatus);
+        }
+    }
+
+    // CRUD: Location (delete)
+    public void deleteLocationById(String locationId) {
+        Location location = getLocationById(locationId);
+        if (location != null) {
+            removeLocation(location);
+        }
+    }
+
+    // CRUD: ChargingStation (create)
+    public ChargingStation createStation(ChargingStation chargingStation) {
+        addStation(chargingStation);
+        return chargingStation;
+    }
+
+    // CRUD: ChargingStation (read)
+    public List<ChargingStation> listStations() {
+        return chargingStations;
+    }
+
+    // CRUD: ChargingStation (update)
+    public void updateStationState(String stationId, StationState newState) {
+        ChargingStation station = getStationById(stationId);
+        if (station != null) {
+            station.setState(newState);
+        }
+    }
+
+    public void updateStationType(String stationId, ChargingStationType newType) {
+        ChargingStation station = getStationById(stationId);
+        if (station != null) {
+            station.setType(newType);
+        }
+    }
+
+    // CRUD: ChargingStation (delete)
+    public void deleteStationById(String stationId) {
+        removeStationById(stationId);
+    }
+
     public void addStation(ChargingStation chargingStation) {
         if (getStationById(chargingStation.getStationID()) != null) {
             throw new IllegalArgumentException("Station ID already exists");

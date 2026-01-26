@@ -2,46 +2,11 @@ package org.example;
 
 public class ChargingStation {
 
-    public String getStationID() {
-        return stationID;
-    }
 
     private String stationID;
-
-    public StationState getState() {
-        return state;
-    }
-
-    public void setState(StationState state) {
-        this.state = state;
-    }
-
     private StationState state;
-
-    public String getLocationId() {
-        return locationId;
-    }
-
     private String locationId;
-
-    public ChargingStationType getType() {
-        return type;
-    }
-
-    public void setType(ChargingStationType type) {
-        this.type = type;
-    }
-
     ChargingStationType type;
-
-    public Price getPrice() {
-        return price;
-    }
-
-    public void setPrice(Price price) {
-        this.price = price;
-    }
-
     private Price price;
 
 
@@ -53,13 +18,45 @@ public class ChargingStation {
         this.price = price;
     }
 
+    public String getStationID() {
+        return stationID;
+    }
 
-    public void addChargingStation(){
+    public StationState getState() {
+        return state;
+    }
+
+    public ChargingStationType getType() {
+        return type;
+    }
+
+    public void setState(StationState state) {
+        this.state = state;
+    }
+
+    public void setType(ChargingStationType type) {
+        this.type = type;
+    }
+
+    public Price getPrice() {
+        return price;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
+    }
+
+    public void addChargingStation() {
         StationManager.getInstance().addStation(this);
     }
 
     public void print() {
         System.out.printf("StationID: %s, State: %s, Location: %s", this.stationID, this.state, this.locationId);
     }
+
 
 }

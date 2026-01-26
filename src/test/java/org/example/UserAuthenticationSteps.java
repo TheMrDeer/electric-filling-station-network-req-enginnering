@@ -21,6 +21,7 @@ public class UserAuthenticationSteps {
     @Then("a Customer Account should be created for {string}")
     public void aCustomerAccountShouldBeCreatedFor(String arg0) {
         assertNotNull(UserManager.getCustomerById(arg0));
+        System.out.println("Customer account created: " + arg0);
     }
 
     @And("the initial Balance of {string} should be {double}")

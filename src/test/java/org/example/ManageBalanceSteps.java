@@ -35,6 +35,7 @@ public class ManageBalanceSteps {
     @Then("I should see a balance of {double}")
     public void iShouldSeeABalanceOf(double amount) {
         assertEquals(amount, balance);
+        System.out.println("Balance checked: " + balance);
     }
 
     @When("I top up the balance by {double}")

@@ -55,7 +55,7 @@ public class ChargingStation {
 
 
     public void addChargingStation(){
-        StationManager.addStation(this);
+        StationManager.getInstance().addStation(this);
     }
 
     public void print() {

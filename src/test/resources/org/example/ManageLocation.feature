@@ -12,3 +12,9 @@ Feature: Manage Locations
     Given a location named "Old Station" exists in the network
     When I remove the location "Old Station"
     Then the location "Old Station" should no longer exist in the network
+
+  Scenario: Prevent deleting a location with active stations (Edge Case)
+    Given a location named "Busy Hub" exists
+    And a station "CS-Busy" exists at "Busy Hub"
+    When I attempt to remove the location "Busy Hub"
+    Then I should receive a location error message "Cannot delete location with assigned stations"

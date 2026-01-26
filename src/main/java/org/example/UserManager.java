@@ -8,6 +8,9 @@ public class UserManager {
     private static List<User> users = new ArrayList<>();
 
     public static void addUser(User user) {
+        if (getCustomerById(user.getUserId()) != null) {
+            throw new IllegalStateException("User already exists");
+        }
         users.add(user);
     }
 
@@ -35,5 +38,3 @@ public class UserManager {
                 .orElse(null);
     }
 }
-
-

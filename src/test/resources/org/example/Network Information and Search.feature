@@ -18,3 +18,9 @@ Feature: Network Information and Search
     Then I should receive the details for "Vienna Central"
     And the details should include the Price Configuration of 0.30 for "AC"
     And I should see the State of Charging Station "CS-101" as "in operation free"
+
+    And the details should include the Price Configuration of 0.50 for "DC"
+
+  Scenario: Search for a non-existent location (Edge Case)
+    When I search for the Location "Atlantis"
+    Then I should be informed that "Atlantis" does not exist

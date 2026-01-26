@@ -10,16 +10,35 @@ public abstract class User {
     public User(String userId, String name, String email, String password) {
         this.userId = userId;
         this.name = name;
-        this.email = email;
-        this.password = password;
+        setEmail(email);
+        setPassword(password);
     }
 
-    public void addUser() {
-        UserManager.addUser(this);
+    public void setEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+        if (!email.matches("^[^@]+@[^@]+\\.[^@]+$")) {
+            throw new IllegalArgumentException("Email is not valid");
+        }
+        this.email = email;
+    }
+
+
+    public void setPassword(String password) {
+        int minLength = 8;
+        if (password.length() < minLength) {
+            throw new IllegalArgumentException("Password must have at least "+minLength+" characters");
+        }
+            this.password = password;
     }
 
     public String getEmail() {
         return this.email;
+    }
+
+    public void addUser() {
+        UserManager.addUser(this);
     }
 
     public void register() {
@@ -34,8 +53,8 @@ public abstract class User {
         return this.email.equals(email) && this.password.equals(password);
     }
 
-    public void print(){
-        System.out.printf("UserId: %s, Name: %s, Email: %s",this.userId,this.name,this.email);
+    public void print() {
+        System.out.printf("UserId: %s, Name: %s, Email: %s", this.userId, this.name, this.email);
     }
 
     public String getUserId() {

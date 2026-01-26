@@ -31,3 +31,9 @@ Feature: Charging
     Then _the station "CS-103" state should change to "in operation free"
     And the cost of 23.00 should be deducted from my balance
     And my new balance should be 27.00
+
+  Scenario: Prevent starting a session at an occupied station (Edge Case)
+    Given I am at station "CS-102"
+    And the station "CS-102" is "occupied"
+    When I attempt to start a charging session
+    Then I should receive a session error message "Station is currently occupied"

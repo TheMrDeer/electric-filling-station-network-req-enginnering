@@ -27,12 +27,16 @@ public class Session {
     }
 
     public void startSession() {
+        ChargingStation station = StationManager.getInstance().getStationById(this.stationId);
+        if (station != null && station.getState() == StationState.Occupied) {
+            throw new IllegalStateException("Station is currently occupied");
+        }
+
         this.startTime = LocalDateTime.now();
         isSessionActive = true;
         StationManager.getInstance().setStationState(stationId, StationState.Occupied);
         
         // Fetch Snapshot Data
-        ChargingStation station = StationManager.getInstance().getStationById(this.stationId);
         if (station != null) {
             this.stationType = station.getType();
             
@@ -83,6 +87,13 @@ public class Session {
     // For testing purposes to set past dates
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        if (this.startTime != null && endTime.isBefore(this.startTime)) {
+            throw new IllegalArgumentException("End time cannot be before start time");
+        }
+        this.endTime = endTime;
     }
 
     public double getChargedEnergy() {

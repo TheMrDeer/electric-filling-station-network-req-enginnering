@@ -14,6 +14,9 @@ public class Price {
 
     // New Constructor for Temporal Tariff
     public Price(String locationId, ChargingStationType type, double pricePerMinute, double pricePerKwh, LocalDateTime validFrom, LocalDateTime validTo) {
+        if (pricePerMinute < 0 || pricePerKwh < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
         this.locationId = locationId;
         this.type = type;
         this.pricePerMinute = pricePerMinute;
@@ -36,11 +39,17 @@ public class Price {
 
     // Compatibility Methods
     public void setPrice(double ratePerMinute) {
+        if (ratePerMinute < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
         this.pricePerMinute = ratePerMinute;
         this.pricePerKwh = 0.0;
     }
 
     public void setPrice(double ratePerMinute, double ratePerKwh) {
+        if (ratePerMinute < 0 || ratePerKwh < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
         this.pricePerMinute = ratePerMinute;
         this.pricePerKwh = ratePerKwh;
     }

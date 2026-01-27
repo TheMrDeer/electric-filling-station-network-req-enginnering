@@ -43,7 +43,7 @@ public class Location {
     }
 
     public String getLocationInfo() {
-        return String.format("LocationID: %s, Name: %s, Address: %s", this.locationId, this.name, this.address);
+        return String.format("LocationID: %s, Name: %s, Address: %s, Status: %s", this.locationId, this.name, this.address, this.status);
     }
 
     public void addPrice(Price newPrice) {

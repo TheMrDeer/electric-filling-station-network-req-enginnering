@@ -10,8 +10,9 @@ public class ElectricChargingStationNetwork {
         //Owner Story
         Owner owner = new Owner("OWN123", "Own Person", "o@o.com", "abcdefgh");
 
-        //Configure Locations
-        Location loc = new Location("LOC-1", "Vienna-Central", "Stephansplatz 1", Status.Active); //adds also location to list
+        //Configure Locations, adds also locations to Stationmanager
+        Location loc = new Location("LOC-1", "Vienna-Central", "Stephansplatz 1", Status.Active);
+        Location loc2 = new Location("LOC-2", "Graz-North", "Hauptplatz 1", Status.Inactive);
 
         //Configure Charging Stations + Define Prices
         ChargingStation station = new ChargingStation("CS-01", StationState.inOperationFree, "LOC-1", ChargingStationType.AC, new Price(0.5));
@@ -26,10 +27,11 @@ public class ElectricChargingStationNetwork {
         }
 
         //Gather network data
-        System.out.println(loc.getLocationInfo());
+        for (Location l : StationManager.getInstance().getLocations()) {
+            System.out.println(l.getLocationInfo());
+        }
+
         System.out.println();
-
-
 
         //Customer Story
         //registration of a new customer
